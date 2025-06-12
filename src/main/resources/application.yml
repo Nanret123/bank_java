@@ -1,0 +1,70 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Bank Management System
+  jackson:
+    time-zone: Africa/Lagos
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bank_management_system
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: deferred
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          '[time_zone]': UTC
+          '[batch_size]': 25
+        query:
+          '[fail_on_pagination_over_collection_fetch]': true
+          '[in_clause_parameter_padding]': true
+        '[generate_statistics]': false
+        '[order_updates]': true
+        '[order_inserts]': true
+        connection:
+        '[provider_disables_autocommit]': true
+        '[default_schema]': public
+        ddl-auto: none 
+      naming:
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    open-in-view: false
+  liquibase: 
+    drop-first: false
+    enabled: true   
+    default-schema: public
+    contexts: dev
+    change-log: classpath:db/changelog/db.changelog-master.yml
+
+  # servlet:
+  #   multipart:
+  #     enabled: true
+  #     max-file-size: 100MB
+  #     max-request-size: 100MB
+
+logging:
+    level:
+      ROOT: INFO
+      '[org.hibernate.SQL]': INFO
+      '[com.example.ecom]': DEBUG
+      
+security:
+    jwt:
+      secret: my-super-secure-jwt-secret-key-123!
+      expiration: 86400000    # 1 day
+      token-prefix: Bearer
+      header-string: Authorization
+      refresh:
+        expiration: 604800000  #7 days
+    cors:
+      allowed-origins: "*"
+      allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
