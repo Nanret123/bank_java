@@ -51,7 +51,7 @@ public ResponseEntity<ErrorResponse> handleValidation(
             .timestamp(LocalDateTime.now().toString())
             .status(HttpStatus.BAD_REQUEST.value())
             .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
-            .message("Validation failed")
+            .message(ex.getMessage())
             .path(request.getRequestURI())
             .build();
 
