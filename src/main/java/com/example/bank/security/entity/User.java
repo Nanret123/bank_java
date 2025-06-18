@@ -61,7 +61,8 @@ public class User {
   private String address;
 
   @Column(name="is_password_changed")
-  private boolean isPasswordChanged;
+  @Builder.Default
+  private boolean isPasswordChanged = false;
 
   private String bio;
 

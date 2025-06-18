@@ -38,8 +38,13 @@ public class UserInfo {
   @Schema(description = "Last login time of the user", example = "2023-10-01T12:00:00Z")
   private LocalDateTime lastLogin;
 
-  @Schema(description = "Indicates if the user is currently active", example = "true")
+  @Schema(description="Indicates if user has changed their password", example = "false")
+  private boolean isPasswordChanged;
+
+  @Schema(description = "Indicates the time of creation", example = "true")
   private LocalDateTime createdAt;
+
+  @Schema(description = "Indicates the time of last update", example = "2023-10-01T12:00:00Z")
     private LocalDateTime updatedAt;
 
 }
