@@ -61,7 +61,7 @@ cloudinary:
       
 app:
   jwt:
-    secret: your-base64-encoded-secret-key
+    secret: uE9Z2NFgDgy5ykNQy6zjUPx0FVqzffGu1eS05Lr8chc%
     access-token-expiration: 604800000
     # access-token-expiration: 1800000   # 30 minutes
     refresh-token-expiration: 604800000  # e.g., 7 days in milliseconds

@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-is_password_changed-to-users
+      author: bank
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: is_password_changed
+                  type: boolean
+                  defaultValue: false

@@ -3,3 +3,5 @@ databaseChangeLog:
       file: "db/changelog/add-user-table.yml"
   - include:
       file: "db/changelog/add-fields-to-user-table.yml"
+  - include:
+      file: "db/changelog/add-field-to-user.yml"
