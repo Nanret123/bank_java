@@ -1,9 +1,6 @@
 package com.example.bank.common.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,12 +28,6 @@ public class ErrorResponse {
 
     @Schema(description = "Request path", example = "/api/auth/login")
     private String path;
-
-    @Schema(description = "Validation errors, if any")
-    private Map<String, String> validationErrors;
-
-    @Schema(description = "List of field validation errors, if any")
-    private List<ValidationError> fieldErrors;
 
     public ErrorResponse(String message, int status) {
     this.timestamp = LocalDateTime.now().toString();
