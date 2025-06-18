@@ -5,3 +5,7 @@ databaseChangeLog:
       file: "db/changelog/add-fields-to-user-table.yml"
   - include:
       file: "db/changelog/add-field-to-user.yml"
+  - include:
+        file: "db/changelog/refresh-token-table.yml"
+  - include:
+        file: "db/changelog/change-table-name.yml"

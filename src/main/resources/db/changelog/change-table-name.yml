@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: rename-refresh-token-table
+      author: bank
+      changes:
+        - renameTable:
+            oldTableName: refresh_token
+            newTableName: refresh_tokens
