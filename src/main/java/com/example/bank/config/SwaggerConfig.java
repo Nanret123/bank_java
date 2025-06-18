@@ -82,7 +82,7 @@ public class SwaggerConfig {
     return GroupedOpenApi.builder()
         .group("01-authentication")
         .displayName("Authentication & User Management")
-        .pathsToMatch("/api/auth/**", "/api/admin/users/**")
+        .pathsToMatch("/api/auth/**", "/api/users/**")
         .build();
   }
 

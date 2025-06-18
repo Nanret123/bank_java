@@ -36,7 +36,7 @@ public class User {
   @Column(nullable = false)
   private String password;
 
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String email;
 
   @Column(name="full_name")
@@ -51,6 +51,19 @@ public class User {
   @Column(name="is_active")
   @Builder.Default
   private boolean isActive = true;
+
+  @Column(name="avatar_url")
+  private String avatarUrl;
+
+  @Column(name="phone_number")
+  private String phoneNumber;
+
+  private String address;
+
+  @Column(name="is_password_changed")
+  private boolean isPasswordChanged;
+
+  private String bio;
 
   @CreationTimestamp
   @Column(name="created_at")

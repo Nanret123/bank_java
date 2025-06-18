@@ -41,10 +41,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
-                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-                .requestMatchers("/api/manager/**").hasAnyAuthority("ADMIN", "MANAGER")
-                .requestMatchers("/api/teller/**").hasAnyAuthority("ADMIN", "MANAGER", "TELLER")
+                .requestMatchers("/api/auth", "/api/users/create").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
