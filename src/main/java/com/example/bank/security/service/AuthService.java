@@ -78,7 +78,7 @@ public class AuthService {
         .username(user.getUsername())
         .email(user.getEmail())
         .fullName(user.getFullName())
-
+        .isPasswordChanged(user.isPasswordChanged())
         .role(user.getRole())
         .branchCode(user.getBranchCode())
         .lastLogin(user.getLastLogin())
