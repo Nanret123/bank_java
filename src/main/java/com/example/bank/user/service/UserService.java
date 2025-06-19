@@ -14,7 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.bank.FileStorage.Service.IFileStorage;
+import com.example.bank.FileStorage.Service.CloudinaryFileStorageService;
+import com.example.bank.FileStorage.dto.FileUploadResponse;
 import com.example.bank.common.exception.InvalidFileException;
 import com.example.bank.common.exception.ResourceNotFoundException;
 import com.example.bank.common.exception.ValidationException;
@@ -22,7 +23,6 @@ import com.example.bank.security.entity.User;
 import com.example.bank.security.repository.UserRepository;
 import com.example.bank.user.DTO.AvatarUploadResponse;
 import com.example.bank.user.DTO.CreateUserRequest;
-import com.example.bank.user.DTO.ForcePasswordResetRequest;
 import com.example.bank.user.DTO.UpdateProfileRequest;
 import com.example.bank.user.DTO.UpdateUserRequest;
 import com.example.bank.user.DTO.UserCreationResponse;
@@ -46,7 +46,7 @@ public class UserService {
 
   private final UserRepository userRepo;
   private final PasswordEncoder passwordEncoder;
-  private final IFileStorage fileStorageService;
+  private final CloudinaryFileStorageService fileStorageService;
 
   public UserCreationResponse createUser(CreateUserRequest request) {
     // validate unique username and email
@@ -139,14 +139,6 @@ public class UserService {
     userRepo.updateUserStatus(userId, false);
   }
 
-  public String forcePasswordReset(UUID userId, ForcePasswordResetRequest request) {
-    User user = findUserEntity(userId);
-    user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-    userRepo.save(user);
-
-    return "Password reset successfully";
-  }
-
   public long getTotalUsers() {
     return userRepo.count();
   }
@@ -190,7 +182,6 @@ public class UserService {
 
   public AvatarUploadResponse uploadAvatar(UUID userId, MultipartFile file) {
     User user = findUserEntity(userId);
-    validateFile(file);
 
     try {
       // Delete old avatar if exists
@@ -199,14 +190,16 @@ public class UserService {
       }
 
       // Upload new avatar
-      String avatarUrl = fileStorageService.storeFile(file, "avatars/" + user.getUsername());
-      user.setAvatarUrl(avatarUrl);
+      FileUploadResponse avatarUrl = fileStorageService.uploadFile(file, "avatars/" + user.getUsername());
+      user.setAvatarUrl(avatarUrl.getUrl());
       userRepo.save(user);
 
       log.info("Avatar uploaded successfully for user: {}", user.getUsername());
 
+      
+
       return AvatarUploadResponse.builder()
-          .avatarUrl(avatarUrl)
+          .avatarUrl(avatarUrl.getUrl())
           .message("Avatar uploaded successfully")
           .success(true)
           .build();
@@ -220,20 +213,23 @@ public class UserService {
     }
   }
 
-  private void validateFile(MultipartFile file) {
-    if (file.isEmpty()) {
-      throw new InvalidFileException("File is empty");
-    }
+   public void removeProfilePicture (UUID userId) {
+    User user = findUserEntity(userId);
 
-    if (file.getSize() > MAX_FILE_SIZE) {
-      throw new InvalidFileException("File size exceeds maximum limit of 5MB");
+    if (user.getAvatarUrl() != null) {
+      try {
+        fileStorageService.deleteFile(user.getAvatarUrl());
+        user.setAvatarUrl(null);
+        userRepo.save(user);
+        log.info("Profile picture removed successfully for user: {}", user.getUsername());
+      } catch (Exception e) {
+        log.error("Error removing profile picture", e);
+        throw new RuntimeException("Failed to remove profile picture: " + e.getMessage());
+      }
+    } else {
+      throw new ResourceNotFoundException("No profile picture found for user");
     }
-
-    String contentType = file.getContentType();
-    if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
-      throw new InvalidFileException("Invalid file type. Only JPEG, PNG, and GIF are allowed");
-    }
-  }
+   }
 
   private UserResponse mapToUserResponse(User user) {
     return UserResponse.builder()

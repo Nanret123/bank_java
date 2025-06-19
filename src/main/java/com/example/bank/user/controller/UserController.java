@@ -25,7 +25,6 @@ import com.example.bank.common.util.ApiResponseUtil;
 import com.example.bank.security.service.UserPrincipal;
 import com.example.bank.user.DTO.AvatarUploadResponse;
 import com.example.bank.user.DTO.CreateUserRequest;
-import com.example.bank.user.DTO.ForcePasswordResetRequest;
 import com.example.bank.user.DTO.UpdateProfileRequest;
 import com.example.bank.user.DTO.UpdateUserRequest;
 import com.example.bank.user.DTO.UserCreationResponse;
@@ -89,16 +88,6 @@ public class UserController {
     UserResponse user = userService.getUserById(userId);
     return ApiResponseUtil.success("User retrieved successfully", user);
 
-  }
-
-  @PutMapping("/reset-password")
-  public ResponseEntity<ApiResponseDto<String>> forcePasswordReset(
-      @Valid @RequestBody ForcePasswordResetRequest request,
-      @AuthenticationPrincipal UserPrincipal userDetails) {
-
-    UUID userId = userDetails.getId();
-    String result = userService.forcePasswordReset(userId, request);
-    return ApiResponseUtil.success("Password successfully", result);
   }
 
   @PutMapping("/{userId}/activate")

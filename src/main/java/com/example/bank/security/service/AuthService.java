@@ -3,6 +3,7 @@ package com.example.bank.security.service;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +22,7 @@ import com.example.bank.security.entity.RefreshToken;
 import com.example.bank.security.entity.User;
 import com.example.bank.security.repository.RefreshTokenRepository;
 import com.example.bank.security.repository.UserRepository;
+import com.example.bank.user.DTO.ForcePasswordResetRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +93,20 @@ public class AuthService {
         .user(userInfo)
         .build();
   }
+
+   public String forcePasswordReset(UUID userId, ForcePasswordResetRequest request) {
+    User user = userRepo.findById(userId)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+        throw new BadCredentialsException("Old password is incorrect");
+    }
+    user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    userRepo.save(user);
+
+    return "Password reset successfully";
+  }
+
 
   public TokenResponse refreshAccessToken(String refreshTokenString) {
 

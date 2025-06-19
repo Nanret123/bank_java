@@ -1,8 +1,12 @@
 package com.example.bank.security.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,11 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bank.common.dto.ApiResponseDto;
 import com.example.bank.common.dto.ErrorResponse;
+import com.example.bank.common.util.ApiResponseUtil;
 import com.example.bank.security.DTO.LoginRequest;
 import com.example.bank.security.DTO.LoginResponse;
 import com.example.bank.security.DTO.RefreshTokenRequest;
 import com.example.bank.security.DTO.TokenResponse;
 import com.example.bank.security.service.AuthService;
+import com.example.bank.security.service.UserPrincipal;
+import com.example.bank.user.DTO.ForcePasswordResetRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -74,6 +81,17 @@ public class AuthController {
         .message("Logged out successfully")
         .build();
     return ResponseEntity.ok(response);
+  }
+
+  @PutMapping("/reset-password")
+  @Operation(summary = "Force password reset", description = "Force a user to reset their password", security = @SecurityRequirement(name = "Bearer Authentication"))
+  public ResponseEntity<ApiResponseDto<String>> forcePasswordReset(
+      @Valid @RequestBody ForcePasswordResetRequest request,
+      @AuthenticationPrincipal UserPrincipal userDetails) {
+
+    UUID userId = userDetails.getId();
+    String result = authService.forcePasswordReset(userId, request);
+    return ApiResponseUtil.success("Password successfully", result);
   }
 
   @Operation(summary = "Logout all devices", description = "Invalidate all refresh tokens for user across all devices", security = @SecurityRequirement(name = "Bearer Authentication"))
