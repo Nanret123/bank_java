@@ -35,17 +35,19 @@ import com.example.bank.user.DTO.UserResponse;
 import com.example.bank.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User Management", description = "APIs for managing users")
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
 
   @PostMapping("/create")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+  // @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
   @Operation(summary = "Create a new user (admin/manager only)")
   public ResponseEntity<ApiResponseDto<UserCreationResponse>> createUser(
       @Valid @RequestBody CreateUserRequest request) {
@@ -54,18 +56,7 @@ public class UserController {
     return ApiResponseUtil.success("User created successfully", userInfo, HttpStatus.CREATED);
   }
 
-  @PutMapping("/{userId}")
-  @Operation(summary = "Update an existing user (admin/manager only)")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-  public ResponseEntity<ApiResponseDto<UserResponse>> updateUser(
-      @PathVariable UUID userId,
-      @Valid @RequestBody UpdateUserRequest request) {
-    UserResponse userInfo = userService.updateUser(userId, request);
-    return ApiResponseUtil.success("User updated successfully", userInfo);
-  }
-
   @DeleteMapping("/{userId}")
-
   @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Deactivate a user (admin only)")
   public ResponseEntity<ApiResponseDto<Void>> deactivateUser(@PathVariable UUID userId) {
@@ -81,6 +72,20 @@ public class UserController {
     Page<UserResponse> users = userService.getAllUsers(filter);
     return ApiResponseUtil.success("Users retrieved successfully", users);
 
+  }
+
+  @GetMapping("/count")
+  @Operation(summary = "Get total number of users")
+  public ResponseEntity<ApiResponseDto<Long>> getTotalUsers() {
+    long total = userService.getTotalUsers();
+    return ApiResponseUtil.success("Total number of users retrieved successfully", total);
+  }
+
+  @GetMapping("/active/count")
+  @Operation(summary = "Get number of active users")
+  public ResponseEntity<ApiResponseDto<Long>> getActiveUsers() {
+    long active = userService.getActiveUsersCount();
+     return ApiResponseUtil.success("Total number of active users retrieved successfully", active);
   }
 
   @GetMapping("/{userId}")
@@ -117,6 +122,16 @@ public class UserController {
     UserProfile profile = userService.updateProfile(
         userDetails.getId(), request);
     return ApiResponseUtil.success("User profile updated successfully", profile);
+  }
+
+  @PutMapping("/{userId}")
+  @Operation(summary = "Update an existing user (admin/manager only)")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+  public ResponseEntity<ApiResponseDto<UserResponse>> updateUser(
+      @PathVariable UUID userId,
+      @Valid @RequestBody UpdateUserRequest request) {
+    UserResponse userInfo = userService.updateUser(userId, request);
+    return ApiResponseUtil.success("User updated successfully", userInfo);
   }
 
   @PostMapping(path = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
