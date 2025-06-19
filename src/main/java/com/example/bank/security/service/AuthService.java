@@ -102,6 +102,7 @@ public class AuthService {
         throw new BadCredentialsException("Old password is incorrect");
     }
     user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    user.setPasswordChanged(true); // Mark password as changed
     userRepo.save(user);
 
     return "Password reset successfully";
