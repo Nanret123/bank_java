@@ -2,7 +2,6 @@ package com.example.bank.config;
 
 import java.util.Arrays;
 
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -77,75 +76,75 @@ public class SwaggerConfig {
         .addProperty("path", new Schema<>().type("string"));
   }
 
-  @Bean
-  public GroupedOpenApi authenticationApi() {
-    return GroupedOpenApi.builder()
-        .group("01-authentication")
-        .displayName("Authentication & User Management")
-        .pathsToMatch("/api/auth/**", "/api/users/**")
-        .build();
-  }
+  // @Bean
+  // public GroupedOpenApi authenticationApi() {
+  //   return GroupedOpenApi.builder()
+  //       .group("01-authentication")
+  //       .displayName("Authentication & User Management")
+  //       .pathsToMatch("/api/auth/**", "/api/users/**")
+  //       .build();
+  // }
 
-  @Bean
-  public GroupedOpenApi customerApi() {
-    return GroupedOpenApi.builder()
-        .group("02-customers")
-        .displayName("Customer Management")
-        .pathsToMatch("/api/customers/**")
-        .build();
-  }
+  // @Bean
+  // public GroupedOpenApi customerApi() {
+  //   return GroupedOpenApi.builder()
+  //       .group("02-customers")
+  //       .displayName("Customer Management")
+  //       .pathsToMatch("/api/customers/**")
+  //       .build();
+  // }
 
-  @Bean
-  public GroupedOpenApi accountApi() {
-    return GroupedOpenApi.builder()
-        .group("03-accounts")
-        .displayName("Account Management")
-        .pathsToMatch("/api/accounts/**")
-        .build();
-  }
+  // @Bean
+  // public GroupedOpenApi accountApi() {
+  //   return GroupedOpenApi.builder()
+  //       .group("03-accounts")
+  //       .displayName("Account Management")
+  //       .pathsToMatch("/api/accounts/**")
+  //       .build();
+  // }
 
-  @Bean
-  public GroupedOpenApi transactionApi() {
-    return GroupedOpenApi.builder()
-        .group("04-transactions")
-        .displayName("Transaction Processing")
-        .pathsToMatch("/api/transactions/**")
-        .build();
-  }
+  // @Bean
+  // public GroupedOpenApi transactionApi() {
+  //   return GroupedOpenApi.builder()
+  //       .group("04-transactions")
+  //       .displayName("Transaction Processing")
+  //       .pathsToMatch("/api/transactions/**")
+  //       .build();
+  // }
 
-  @Bean
-  public GroupedOpenApi ledgerApi() {
-    return GroupedOpenApi.builder()
-        .group("05-ledger")
-        .displayName("Ledger & Accounting")
-        .pathsToMatch("/api/ledger/**")
-        .build();
-  }
+  // @Bean
+  // public GroupedOpenApi ledgerApi() {
+  //   return GroupedOpenApi.builder()
+  //       .group("05-ledger")
+  //       .displayName("Ledger & Accounting")
+  //       .pathsToMatch("/api/ledger/**")
+  //       .build();
+  // }
 
-  @Bean
-  public GroupedOpenApi reportingApi() {
-    return GroupedOpenApi.builder()
-        .group("06-reporting")
-        .displayName("Reports & Audit")
-        .pathsToMatch("/api/reports/**", "/api/audit/**")
-        .build();
-  }
+  // @Bean
+  // public GroupedOpenApi reportingApi() {
+  //   return GroupedOpenApi.builder()
+  //       .group("06-reporting")
+  //       .displayName("Reports & Audit")
+  //       .pathsToMatch("/api/reports/**", "/api/audit/**")
+  //       .build();
+  // }
 
-  @Bean
-  public GroupedOpenApi branchApi() {
-    return GroupedOpenApi.builder()
-        .group("07-branches")
-        .displayName("Branch Management")
-        .pathsToMatch("/api/branches/**")
-        .build();
-  }
+  // @Bean
+  // public GroupedOpenApi branchApi() {
+  //   return GroupedOpenApi.builder()
+  //       .group("07-branches")
+  //       .displayName("Branch Management")
+  //       .pathsToMatch("/api/branches/**")
+  //       .build();
+  // }
 
-  @Bean
-  public GroupedOpenApi adminApi() {
-    return GroupedOpenApi.builder()
-        .group("08-admin")
-        .displayName("System Administration")
-        .pathsToMatch("/api/admin/**")
-        .build();
-  }
+  // @Bean
+  // public GroupedOpenApi adminApi() {
+  //   return GroupedOpenApi.builder()
+  //       .group("08-admin")
+  //       .displayName("System Administration")
+  //       .pathsToMatch("/api/admin/**")
+  //       .build();
+  // }
 }
