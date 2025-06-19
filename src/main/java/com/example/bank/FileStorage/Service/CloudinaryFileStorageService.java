@@ -1,17 +1,26 @@
 package com.example.bank.FileStorage.Service;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.example.bank.FileStorage.dto.FileUploadResponse;
+import com.example.bank.common.exception.InvalidFileException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
-public class CloudinaryFileStorageService implements IFileStorage {
+@Slf4j
+public class CloudinaryFileStorageService {
 
   private final Cloudinary cloudinary;
 
@@ -19,36 +28,94 @@ public class CloudinaryFileStorageService implements IFileStorage {
     this.cloudinary = cloudinary;
   }
 
-  @Override
-  public String storeFile(MultipartFile file,  String folderPath) {
+  public FileUploadResponse uploadFile(MultipartFile file,  String folderPath) {
     try {
-      // String folderPath = "uploads/" + LocalDate.now();
+      validateFIle(file); // Validate the file before uploading
 
-      Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-          "folder", folderPath));
-      return uploadResult.get("secure_url").toString(); // This is the public URL
+      Map<String, Object> uploadParams = new HashMap<>();
+      uploadParams.put("folder", folderPath); 
+      uploadParams.put("resource_type", "image");
+      uploadParams.put("use_filename", true); 
+      uploadParams.put("unique_filename", true); 
+
+      Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(), uploadParams);
+
+      //build response
+      return FileUploadResponse.builder()
+          .publicId((String) result.get("public_id"))
+          .url((String) result.get("secure_url"))
+          .originalFileName(file.getOriginalFilename())
+          .size(file.getSize())
+          .contentType(file.getContentType())
+          .uploadedAt(LocalDateTime.now())
+          .build();
+      
     } catch (IOException e) {
-      throw new RuntimeException("Cloudinary upload failed", e);
+      throw new InvalidFileException("Cloudinary upload failed: " + e.getMessage());
     }
   }
 
-  @Override
+  public List<FileUploadResponse> uploadMultipleFiles(List<MultipartFile> files, String folder) {
+        return files.stream()
+                .map(file -> uploadFile(file, folder))
+                .collect(Collectors.toList());
+    }
+
+
   public void deleteFile(String fileUrl) {
     try {
       // Cloudinary deletes based on public_id, not full URL
       String publicId = extractPublicId(fileUrl);
+      log.info("Deleting file with public ID: {}", publicId);
       cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     } catch (Exception e) {
       throw new RuntimeException("Cloudinary delete failed", e);
     }
   }
 
-  private String extractPublicId(String fileUrl) {
-    // Example: extract "profile_pics/abc123" from
-    // https://res.cloudinary.com/demo/image/upload/v123456/profile_pics/abc123.jpg
-    int start = fileUrl.indexOf("/upload/") + 8;
-    String partial = fileUrl.substring(start);
-    return partial.substring(0, partial.lastIndexOf('.')); // Remove extension
+
+    // public boolean deleteFile(String publicId) {
+    //     try {
+    //         Map<String, Object> result = cloudinary.uploader().destroy(publicId, Map.of());
+    //         return "ok".equals(result.get("result"));
+    //     } catch (IOException e) {
+    //         log.error("Error deleting file from Cloudinary: {}", e.getMessage());
+    //         return false;
+    //     }
+    // }
+
+  public void validateFIle(MultipartFile file) {
+    if (file.isEmpty()) {
+      throw new InvalidFileException("File cannot be empty");
+    }
+    if (file.getSize() > 10 * 1024 * 1024) { // 10MB limit
+      throw new InvalidFileException("File size exceeds the maximum limit of 10MB");
+    }
+    String contentType = file.getContentType();
+    if (contentType == null || !contentType.startsWith("image/")) {
+      throw new InvalidFileException("Invalid file type. Only image files are allowed.");
+    }
+
+    List<String> allowedypes = Arrays.asList("image/jpeg", "image/png", "image/gif", "image/jpg");
+    if (!allowedypes.contains(contentType)) {
+      throw new InvalidFileException("Unsupported image format ");
+    }
   }
+
+  private String extractPublicId(String fileUrl) {
+    int uploadIndex = fileUrl.indexOf("/upload/");
+    // Get the part after '/upload/' (e.g., 'v1234567890/avatars/file_b66xas.jpg')
+    String afterUpload = fileUrl.substring(uploadIndex + 8);
+
+    // Remove version by finding the first slash after the version
+    int firstSlash = afterUpload.indexOf('/');
+
+    // Get the path after version (e.g., 'avatars/file_b66xas.jpg')
+    String path = afterUpload.substring(firstSlash + 1);
+
+    // Remove the extension
+    return path.substring(0, path.lastIndexOf('.'));
+}
+
 
 }
