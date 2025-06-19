@@ -18,6 +18,15 @@ public class UserProfile {
   @Schema(description = "Username", example = "john_doe")
   private String username;
 
+  @Schema(description = "Branch code", example = "BR001")
+  private String branchCode;
+
+  @Schema(description = "Phone number", example = "+1234567890")
+  private String phoneNumber;
+
+  @Schema(description = "Address", example = "123 Main St, Springfield")
+  private String address;
+
   @Schema(description = "Email address", example = "johndoe@email.com")
   private String email;
 
@@ -26,5 +35,8 @@ public class UserProfile {
 
   @Schema(description = "User bio or description", example = "Software Engineer with 5 years of experience")
   private String bio;
+
+  @Schema(description = "Profile picture URL", example = "https://example.com/profile.jpg")
+  private String avatarUrl;
 
 }

@@ -17,7 +17,7 @@ import com.example.bank.security.DTO.LoginRequest;
 import com.example.bank.security.DTO.LoginResponse;
 import com.example.bank.security.DTO.TokenResponse;
 import com.example.bank.security.DTO.UserInfo;
-import com.example.bank.security.JWT.JwtService;
+import com.example.bank.security.JWT.service.JwtService;
 import com.example.bank.security.entity.RefreshToken;
 import com.example.bank.security.entity.User;
 import com.example.bank.security.repository.RefreshTokenRepository;

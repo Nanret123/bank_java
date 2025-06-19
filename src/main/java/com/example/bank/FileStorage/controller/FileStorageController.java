@@ -21,10 +21,12 @@ import com.example.bank.common.util.ApiResponseUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/files")
+@Tag(name = "File Storage", description = "APIs for file storage operations")
 @RequiredArgsConstructor
 public class FileStorageController {
 

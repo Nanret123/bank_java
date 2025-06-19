@@ -28,4 +28,14 @@ public class UpdateUserRequest {
 
   @Schema(description = "Indicates if the user is active", example = "true")
   private Boolean isActive;
+
+  @Schema(description = "phone number of the user to be updated", example = "+1234567890")
+  private String phoneNumber;
+
+  @Schema(description = "Bio or description of the user", example = "Experienced software developer with a passion for building scalable applications.")
+  private String bio;
+
+  @Schema(description = "Address of the user", example = "123 Main St, Springfield")
+  private String address;
+
 }

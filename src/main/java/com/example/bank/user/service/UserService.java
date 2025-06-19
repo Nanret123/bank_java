@@ -1,8 +1,6 @@
 package com.example.bank.user.service;
 
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -16,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.bank.FileStorage.Service.CloudinaryFileStorageService;
 import com.example.bank.FileStorage.dto.FileUploadResponse;
-import com.example.bank.common.exception.InvalidFileException;
 import com.example.bank.common.exception.ResourceNotFoundException;
 import com.example.bank.common.exception.ValidationException;
 import com.example.bank.security.entity.User;
@@ -40,9 +37,6 @@ public class UserService {
 
   private static final String TEMP_PASSWORD_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
   private static final int TEMP_PASSWORD_LENGTH = 12;
-  private static final List<String> ALLOWED_IMAGE_TYPES = Arrays.asList(
-      "image/jpeg", "image/jpg", "image/png", "image/gif");
-  private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
   private final UserRepository userRepo;
   private final PasswordEncoder passwordEncoder;
@@ -68,6 +62,8 @@ public class UserService {
         .fullName(request.getFullName())
         .role(request.getRole())
         .branchCode(request.getBranchCode())
+        .phoneNumber(request.getPhoneNumber())
+        .address(request.getAddress())
         .isActive(true)
         .build();
 
@@ -108,6 +104,15 @@ public class UserService {
     if (request.getIsActive() != null) {
       user.setActive(request.getIsActive());
     }
+    if (request.getAddress() != null) {
+      user.setAddress(request.getAddress());
+    }
+    if (request.getBio() != null) {
+      user.setBio(request.getBio());
+    }
+    if (request.getPhoneNumber() != null) {
+      user.setPhoneNumber(request.getPhoneNumber());
+    }
 
     User updatedUser = userRepo.save(user);
 
@@ -136,7 +141,7 @@ public class UserService {
   }
 
   public void activateUser(UUID userId) {
-    userRepo.updateUserStatus(userId, false);
+    userRepo.updateUserStatus(userId, true);
   }
 
   public long getTotalUsers() {
@@ -153,6 +158,10 @@ public class UserService {
         .userId(user.getId().toString())
         .username(user.getUsername())
         .email(user.getEmail())
+        .branchCode(user.getBranchCode())
+        .phoneNumber(user.getPhoneNumber())
+        .address(user.getAddress())
+        .avatarUrl(user.getAvatarUrl())
         .fullName(user.getFullName())
         .bio(user.getBio())
         .build();
@@ -162,11 +171,11 @@ public class UserService {
     User user = findUserEntity(userId);
 
     // Update fields
-    if (profile.getFullName() != null) {
-      user.setFullName(profile.getFullName());
-    }
     if (profile.getBio() != null) {
       user.setBio(profile.getBio());
+    }
+    if (profile.getAddress() != null) {
+      user.setAddress(profile.getAddress());
     }
 
     User updatedUser = userRepo.save(user);
@@ -177,6 +186,9 @@ public class UserService {
         .email(updatedUser.getEmail())
         .fullName(updatedUser.getFullName())
         .bio(updatedUser.getBio())
+        .address(updatedUser.getAddress())
+        .branchCode(updatedUser.getBranchCode())
+        .phoneNumber(updatedUser.getPhoneNumber())
         .build();
   }
 
@@ -190,13 +202,11 @@ public class UserService {
       }
 
       // Upload new avatar
-      FileUploadResponse avatarUrl = fileStorageService.uploadFile(file, "avatars/" + user.getUsername());
+      FileUploadResponse avatarUrl = fileStorageService.uploadFile(file, "avatars/");
       user.setAvatarUrl(avatarUrl.getUrl());
       userRepo.save(user);
 
       log.info("Avatar uploaded successfully for user: {}", user.getUsername());
-
-      
 
       return AvatarUploadResponse.builder()
           .avatarUrl(avatarUrl.getUrl())
@@ -213,7 +223,7 @@ public class UserService {
     }
   }
 
-   public void removeProfilePicture (UUID userId) {
+  public void removeProfilePicture(UUID userId) {
     User user = findUserEntity(userId);
 
     if (user.getAvatarUrl() != null) {
@@ -229,7 +239,7 @@ public class UserService {
     } else {
       throw new ResourceNotFoundException("No profile picture found for user");
     }
-   }
+  }
 
   private UserResponse mapToUserResponse(User user) {
     return UserResponse.builder()
@@ -238,6 +248,9 @@ public class UserService {
         .email(user.getEmail())
         .fullName(user.getFullName())
         .role(user.getRole())
+        .phoneNumber(user.getPhoneNumber())
+        .address(user.getAddress())
+        .bio(user.getBio())
         .branchCode(user.getBranchCode())
         .isActive(user.isActive())
         .createdAt(user.getCreatedAt())

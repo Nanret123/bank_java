@@ -35,6 +35,15 @@ public class UserResponse {
   @Schema(description = "Branch code associated with the user", example = "BR001")
   private String branchCode;
 
+  @Schema(description = "Phone number of the user", example = "+1234567890")
+  private String phoneNumber;
+
+  @Schema(description = "Address of the user", example = "123 Main St, Springfield")
+  private String address;
+
+  @Schema(description = "Bio or description of the user", example = "Software Engineer with 5 years of experience")
+  private String bio;
+
   @Schema(description = "Indicates if the user is currently active", example = "true")
   private boolean isActive;
 

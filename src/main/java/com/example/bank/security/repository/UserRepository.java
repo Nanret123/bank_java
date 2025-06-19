@@ -14,6 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.bank.security.entity.User;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificationExecutor<User> { 
   
@@ -32,6 +34,7 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     void updateLastLogin(@Param("userId") UUID userId, @Param("loginTime") LocalDateTime loginTime);
     
     @Modifying
+    @Transactional
     @Query("UPDATE User u SET u.isActive = :isActive WHERE u.id = :userId")
     void updateUserStatus(@Param("userId") UUID userId, @Param("isActive") boolean isActive);
     

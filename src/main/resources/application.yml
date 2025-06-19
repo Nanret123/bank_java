@@ -45,8 +45,8 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 20MB
-      max-request-size: 20MB
+      max-file-size: 10MB
+      max-request-size: 50MB
 
 logging:
     level:
@@ -55,9 +55,9 @@ logging:
       '[com.example.ecom]': DEBUG
       
 cloudinary:
-  cloud_name: your-cloud-name
-  api_key: your-api-key
-  api_secret: your-api-secret
+  cloud_name: dbvv8bryb
+  api_key: 574394318681495
+  api_secret: HVSBv2I6uL1eckjqbxBpMvDH_K8
       
 app:
   jwt:
@@ -73,3 +73,5 @@ app:
       max-age: 3600
 springdoc:
   packages-to-scan: com.example.bank
+  swagger-ui:
+    persist-authorization: true
