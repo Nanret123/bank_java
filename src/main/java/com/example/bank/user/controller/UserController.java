@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -44,8 +45,8 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("/create")
-  //@PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-  @Operation(summary = "Create a new user")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+  @Operation(summary = "Create a new user (admin/manager only)")
   public ResponseEntity<ApiResponseDto<UserCreationResponse>> createUser(
       @Valid @RequestBody CreateUserRequest request) {
     UserCreationResponse userInfo = userService.createUser(request);
@@ -54,8 +55,8 @@ public class UserController {
   }
 
   @PutMapping("/{userId}")
+  @Operation(summary = "Update an existing user (admin/manager only)")
   @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-  @Operation(summary = "Update an existing user")
   public ResponseEntity<ApiResponseDto<UserResponse>> updateUser(
       @PathVariable UUID userId,
       @Valid @RequestBody UpdateUserRequest request) {
@@ -64,8 +65,9 @@ public class UserController {
   }
 
   @DeleteMapping("/{userId}")
+
   @PreAuthorize("hasRole('ADMIN')")
-  @Operation(summary = "Deactivate a user")
+  @Operation(summary = "Deactivate a user (admin only)")
   public ResponseEntity<ApiResponseDto<Void>> deactivateUser(@PathVariable UUID userId) {
     userService.deactivateUser(userId);
     return ApiResponseUtil.success("User deactivated successfully");
@@ -73,7 +75,7 @@ public class UserController {
 
   @GetMapping()
   @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-  @Operation(summary = "Get users including pageable and filter options")
+  @Operation(summary = "Get users including pageable and filter options (admin/manager only)")
   public ResponseEntity<ApiResponseDto<Page<UserResponse>>> getAllUsers(
       @Valid @ModelAttribute @ParameterObject UserFilter filter) {
     Page<UserResponse> users = userService.getAllUsers(filter);
@@ -83,7 +85,7 @@ public class UserController {
 
   @GetMapping("/{userId}")
   @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-  @Operation(description = "Get one user")
+  @Operation(description = "Get one user by ID (admin/manager only)")
   public ResponseEntity<ApiResponseDto<UserResponse>> getUserById(@PathVariable UUID userId) {
     UserResponse user = userService.getUserById(userId);
     return ApiResponseUtil.success("User retrieved successfully", user);
@@ -92,7 +94,7 @@ public class UserController {
 
   @PutMapping("/{userId}/activate")
   @PreAuthorize("hasRole('ADMIN')")
-  @Operation(summary = "Activate a user")
+  @Operation(summary = "Activate a user (admin only)")
   public ResponseEntity<ApiResponseDto<String>> activateUser(
       @PathVariable UUID userId) {
     userService.activateUser(userId);
@@ -100,7 +102,7 @@ public class UserController {
   }
 
   @GetMapping("/profile")
-  @Operation(summary = "Get current user's profile")
+  @Operation(summary = "Get current user's profile information")
   public ResponseEntity<ApiResponseDto<UserProfile>> getCurrentUserProfile(
       @AuthenticationPrincipal UserPrincipal userDetails) {
     UserProfile profile = userService.getCurrentUserProfile(userDetails.getId());
@@ -108,6 +110,7 @@ public class UserController {
   }
 
   @PutMapping("/profile")
+  @Operation(summary = "Update current user's profile information")
   public ResponseEntity<ApiResponseDto<UserProfile>> updateProfile(
       @Valid @RequestBody UpdateProfileRequest request,
       @AuthenticationPrincipal UserPrincipal userDetails) {
@@ -116,7 +119,8 @@ public class UserController {
     return ApiResponseUtil.success("User profile updated successfully", profile);
   }
 
-  @PostMapping("/profile/avatar")
+  @PostMapping(path = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Operation(summary = "Upload avatar for current user")
   public ResponseEntity<ApiResponseDto<AvatarUploadResponse>> uploadAvatar(
       @RequestParam("file") MultipartFile file,
       @AuthenticationPrincipal UserPrincipal userDetails) {
