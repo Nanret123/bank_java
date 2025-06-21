@@ -4,7 +4,10 @@ import java.time.LocalDate;
 
 import com.example.bank.customer.enums.CustomerType;
 import com.example.bank.customer.enums.Gender;
+import com.example.bank.customer.enums.IdType;
 import com.example.bank.customer.enums.MaritalStatus;
+import com.example.bank.customer.enums.ProofOfAddressType;
+import com.example.bank.customer.enums.RiskLevel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -95,6 +98,35 @@ public class CreateCustomerRequest {
   @Schema(description = "Customer type", example = "INDIVIDUAL")
   @NotNull(message = "Customer type is required")
   private CustomerType customerType;
+
+   @Schema(description = "Bank Verification Number", example = "22345678901", required = true)
+    @NotBlank(message = "BVN is required")
+    private String bvn;
+
+    @Schema(description = "Type of ID used for verification", example = "NIN", required = true)
+    @NotNull(message = "ID type is required")
+    private IdType idType;
+
+    @Schema(description = "ID number used for verification", example = "A123456789")
+    private String idNumber;
+
+    @Schema(description = "Expiry date of the ID", example = "2030-12-31")
+    private LocalDate idExpiryDate;
+
+    @Schema(description = "URL to uploaded ID document", example = "https://example.com/id-upload.png")
+    private String idDocumentUrl;
+
+    @Schema(description = "Type of proof of address document", example = "UTILITY_BILL")
+    private ProofOfAddressType proofOfAddressType;
+
+    @Schema(description = "URL to uploaded proof of address", example = "https://example.com/proof-of-address.pdf")
+    private String proofOfAddressUrl;
+
+    @Schema(description = "URL to passport photo", example = "https://example.com/passport-photo.jpg")
+    private String passportPhotoUrl;
+
+    @Schema(description = "URL to signature image", example = "https://example.com/signature.png")
+    private String signatureUrl;
 
   @Schema(description = "Emergency contact name", example = "Jane Doe")
   @NotBlank(message = "Emergency contact name is required")

@@ -1,7 +1,11 @@
 package com.example.bank.customer.dtos;
 
+import java.time.LocalDate;
+
 import com.example.bank.customer.enums.CustomerType;
+import com.example.bank.customer.enums.IdType;
 import com.example.bank.customer.enums.MaritalStatus;
+import com.example.bank.customer.enums.ProofOfAddressType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Request object for updating customer details")
-public class CustomerUpdateRequest {
+public class UpdateCustomerRequest {
     @Schema(description = "first name of the user", example = "John")
     private String firstName;
 
@@ -66,23 +70,45 @@ public class CustomerUpdateRequest {
     @Schema(description = "occupation of the user", example = "Bricklayer")
     private String occupation;
 
-    @Schema(description = "Customer type" , example = "INDIVIDUAL")
-    @NotNull(message = "Customer type is required")
+    @Schema(description = "Customer type", example = "INDIVIDUAL")
     private CustomerType customerType;
 
     @Schema(description = "Emergency contact name", example = "Jane Doe")
-    @NotBlank(message = "Emergency contact name is required")
     private String emergencyContactName;
 
     @Schema(description = "Relationship with emergency contact", example = "Sister")
-    @NotBlank(message = "Emergency contact relationship is required")
     private String emergencyContactRelationship;
 
     @Schema(description = "Phone number of emergency contact", example = "+2347011122233")
-    @NotBlank(message = "Emergency contact phone number is required")
     private String emergencyContactPhone;
 
     @Schema(description = "Branch code associated with the customer", example = "BR001")
     @NotBlank(message = "Branch code is required")
     private String branchCode;
+
+
+    @Schema(description = "Type of ID used for verification", example = "NIN", required = true)
+    @NotNull(message = "ID type is required")
+    private IdType idType;
+
+    @Schema(description = "ID number used for verification", example = "A123456789")
+    private String idNumber;
+
+    @Schema(description = "Expiry date of the ID", example = "2030-12-31")
+    private LocalDate idExpiryDate;
+
+    @Schema(description = "URL to uploaded ID document", example = "https://example.com/id-upload.png")
+    private String idDocumentUrl;
+
+    @Schema(description = "Type of proof of address document", example = "UTILITY_BILL")
+    private ProofOfAddressType proofOfAddressType;
+
+    @Schema(description = "URL to uploaded proof of address", example = "https://example.com/proof-of-address.pdf")
+    private String proofOfAddressUrl;
+
+    @Schema(description = "URL to passport photo", example = "https://example.com/passport-photo.jpg")
+    private String passportPhotoUrl;
+
+    @Schema(description = "URL to signature image", example = "https://example.com/signature.png")
+    private String signatureUrl;
 }
