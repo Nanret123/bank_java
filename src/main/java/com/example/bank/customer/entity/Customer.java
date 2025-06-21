@@ -22,8 +22,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
@@ -42,7 +42,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private UUID id;
 
     @Column(name = "title", length = 10)
@@ -117,7 +117,7 @@ public class Customer {
 
     @Column(name = "proof_of_address_type")
     @Enumerated(EnumType.STRING)
-    private ProofOfAddressType proofOfAddressType; 
+    private ProofOfAddressType proofOfAddressType;
 
     @Column(name = "proof_of_address_url")
     private String proofOfAddressUrl;
@@ -129,10 +129,12 @@ public class Customer {
     private String signatureUrl;
 
     @Column(name = "is_bvn_verified")
-    private Boolean isBvnVerified;
+    @Builder.Default
+    private Boolean isBvnVerified = false;
 
     @Column(name = "is_id_verified")
-    private Boolean isIdVerified;
+    @Builder.Default
+    private Boolean isIdVerified = false;
 
     @Column(name = "risk_level")
     @Enumerated(EnumType.STRING)
@@ -222,5 +224,17 @@ public class Customer {
 
     public boolean isKycCompleted() {
         return this.kycStatus != null && KycStatus.COMPLETED.equals(this.kycStatus);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (status == null)
+            status = CustomerStatus.ACTIVE;
+        if (kycStatus == null)
+            kycStatus = KycStatus.PENDING;
+        if (isBvnVerified == null)
+            isBvnVerified = false;
+        if (isIdVerified == null)
+            isIdVerified = false;
     }
 }
