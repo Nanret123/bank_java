@@ -107,6 +107,11 @@
 			<artifactId>javafaker</artifactId>
 			<version>1.0.2</version>
     </dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>1.6.0.Beta1</version> 
+  </dependency>
 	</dependencies>
 
 	<build>
@@ -127,6 +132,11 @@
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-maven-plugin</artifactId>
       </plugin>
+			<path>
+					<groupId>org.mapstruct</groupId>
+					<artifactId>mapstruct-processor</artifactId>
+					<version>1.6.0.Beta1</version>
+			</path>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
