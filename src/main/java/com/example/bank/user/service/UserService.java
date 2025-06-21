@@ -241,6 +241,11 @@ public class UserService {
     }
   }
 
+  public void deleteUser(UUID userId) {
+    User user = findUserEntity(userId);
+    userRepo.delete(user);
+  }
+
   private UserResponse mapToUserResponse(User user) {
     return UserResponse.builder()
         .id(user.getId())

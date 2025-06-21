@@ -56,7 +56,7 @@ public class UserController {
     return ApiResponseUtil.success("User created successfully", userInfo, HttpStatus.CREATED);
   }
 
-  @DeleteMapping("/{userId}")
+  @DeleteMapping("/{userId}/deactivate")
   @PreAuthorize("hasRole('ADMIN')")
   @Operation(summary = "Deactivate a user (admin only)")
   public ResponseEntity<ApiResponseDto<Void>> deactivateUser(@PathVariable UUID userId) {
@@ -72,6 +72,14 @@ public class UserController {
     Page<UserResponse> users = userService.getAllUsers(filter);
     return ApiResponseUtil.success("Users retrieved successfully", users);
 
+  }
+
+  @DeleteMapping("/{userId}")
+  @PreAuthorize("hasRole('ADMIN')")
+  @Operation(summary = "Delete a user (admin only)")
+  public ResponseEntity<ApiResponseDto<Void>> deleteUser(@PathVariable UUID userId) {
+    userService.deleteUser(userId);
+    return ApiResponseUtil.success("User deleted successfully");
   }
 
   @GetMapping("/count")
@@ -133,6 +141,8 @@ public class UserController {
     UserResponse userInfo = userService.updateUser(userId, request);
     return ApiResponseUtil.success("User updated successfully", userInfo);
   }
+
+
 
   @PostMapping(path = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Upload avatar for current user")
