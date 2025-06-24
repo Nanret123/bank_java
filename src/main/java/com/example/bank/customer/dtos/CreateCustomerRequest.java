@@ -7,7 +7,6 @@ import com.example.bank.customer.enums.Gender;
 import com.example.bank.customer.enums.IdType;
 import com.example.bank.customer.enums.MaritalStatus;
 import com.example.bank.customer.enums.ProofOfAddressType;
-import com.example.bank.customer.enums.RiskLevel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
