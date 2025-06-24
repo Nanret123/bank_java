@@ -2,6 +2,7 @@ package com.example.bank.customer.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,6 +17,7 @@ import com.example.bank.customer.enums.KycStatus;
 import com.example.bank.customer.enums.MaritalStatus;
 import com.example.bank.customer.enums.ProofOfAddressType;
 import com.example.bank.customer.enums.RiskLevel;
+import com.example.bank.security.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +25,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Past;
@@ -158,6 +162,12 @@ public class Customer {
     @Enumerated(EnumType.STRING)
     private KycStatus kycStatus;
 
+    @Column(name = "status_change_reason")
+    private String statusChangeReason;
+
+    @Column(name = "verification_reason")
+    private String verificationReason;
+
     // Emergency Contact
     @Column(name = "emergency_contact_name", length = 100)
     private String emergencyContactName;
@@ -177,6 +187,12 @@ public class Customer {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @JoinColumn(name = "created_by")
+    private UUID createdBy;
+
+    @JoinColumn(name = "updated_by")
+    private UUID updatedBy;
+
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
@@ -190,7 +206,10 @@ public class Customer {
     private LocalDateTime deletedAt;
 
     @Column(name = "deleted_by", length = 50)
-    private String deletedBy;
+    private UUID deletedBy;
+
+    @JoinColumn(name = "approved_by")
+    private UUID approvedBy;
 
     // Relationships (if using JPA relationships)
     // @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch =
@@ -213,7 +232,7 @@ public class Customer {
 
     public Integer getAge() {
         if (dateOfBirth != null) {
-            return LocalDate.now().getYear() - dateOfBirth.getYear();
+            return Period.between(dateOfBirth, LocalDate.now()).getYears();
         }
         return null;
     }
