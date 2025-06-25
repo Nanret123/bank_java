@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.example.bank.KYC.enums.KycStatus;
+import com.example.bank.customer.enums.RiskLevel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -40,10 +42,10 @@ public class CustomerSummaryResponse {
     private String status;
 
     @Schema(description = "KYC verification status", example = "Completed")
-    private String kycStatus;
+    private KycStatus kycStatus;
 
     @Schema(description = "Customer risk rating", example = "Low")
-    private String riskRating;
+    private RiskLevel riskRating;
 
     @Schema(description = "Branch code associated with the customer", example = "BR001")
     private String branchCode;

@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.bank.FileStorage.Service.CloudinaryFileStorageService;
+import com.example.bank.FileStorage.Service.FileStorageService;
 import com.example.bank.FileStorage.dto.FileUploadResponse;
 import com.example.bank.common.exception.ResourceNotFoundException;
 import com.example.bank.common.exception.ValidationException;
@@ -40,7 +40,7 @@ public class UserService {
 
   private final UserRepository userRepo;
   private final PasswordEncoder passwordEncoder;
-  private final CloudinaryFileStorageService fileStorageService;
+  private final FileStorageService fileStorageService;
 
   public UserCreationResponse createUser(CreateUserRequest request) {
     // validate unique username and email

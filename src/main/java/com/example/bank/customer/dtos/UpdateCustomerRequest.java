@@ -1,17 +1,13 @@
 package com.example.bank.customer.dtos;
 
-import java.time.LocalDate;
 
-import com.example.bank.KYC.enums.IdType;
 import com.example.bank.customer.enums.CustomerType;
 import com.example.bank.customer.enums.MaritalStatus;
-import com.example.bank.customer.enums.ProofOfAddressType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank; 
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -85,30 +81,4 @@ public class UpdateCustomerRequest {
     @Schema(description = "Branch code associated with the customer", example = "BR001")
     @NotBlank(message = "Branch code is required")
     private String branchCode;
-
-
-    @Schema(description = "Type of ID used for verification", example = "NIN", required = true)
-    @NotNull(message = "ID type is required")
-    private IdType idType;
-
-    @Schema(description = "ID number used for verification", example = "A123456789")
-    private String idNumber;
-
-    @Schema(description = "Expiry date of the ID", example = "2030-12-31")
-    private LocalDate idExpiryDate;
-
-    @Schema(description = "URL to uploaded ID document", example = "https://example.com/id-upload.png")
-    private String idDocumentUrl;
-
-    @Schema(description = "Type of proof of address document", example = "UTILITY_BILL")
-    private ProofOfAddressType proofOfAddressType;
-
-    @Schema(description = "URL to uploaded proof of address", example = "https://example.com/proof-of-address.pdf")
-    private String proofOfAddressUrl;
-
-    @Schema(description = "URL to passport photo", example = "https://example.com/passport-photo.jpg")
-    private String passportPhotoUrl;
-
-    @Schema(description = "URL to signature image", example = "https://example.com/signature.png")
-    private String signatureUrl;
 }

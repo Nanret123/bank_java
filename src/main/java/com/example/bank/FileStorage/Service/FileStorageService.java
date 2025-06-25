@@ -30,7 +30,7 @@ public class FileStorageService {
 
   public FileUploadResponse uploadFile(MultipartFile file,  String folderPath) {
     try {
-      validateFIle(file); // Validate the file before uploading
+      validateFile(file); // Validate the file before uploading
 
       Map<String, Object> uploadParams = new HashMap<>();
       uploadParams.put("folder", folderPath); 
@@ -84,7 +84,7 @@ public class FileStorageService {
     //     }
     // }
 
-  public void validateFIle(MultipartFile file) {
+  public void validateFile(MultipartFile file) {
     if (file.isEmpty()) {
       throw new InvalidFileException("File cannot be empty");
     }

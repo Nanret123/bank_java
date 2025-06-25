@@ -25,9 +25,9 @@ public interface IKycService {
     
     KycProfileResponseDto rejectKyc(UUID customerId, KycRejectionDto rejectionDto);
     
-    void deleteKycFiles(UUID customerId, List<Long> documentIds);
+    void deleteKycFiles(UUID customerId, List<UUID> documentIds);
     
-    Page<KycProfileResponseDto> getKycProfilesByStatus(String status, Pageable pageable);
+    Page<KycProfileResponseDto> getKycProfilesByStatus(KycStatus status, Pageable pageable);
     
     long getKycCountByStatus(KycStatus status);
 }

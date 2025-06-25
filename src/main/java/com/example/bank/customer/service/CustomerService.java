@@ -233,7 +233,7 @@ public class CustomerService implements ICustomer {
         .inactiveCustomers(customerRepository.countByStatusAndIsDeletedFalse(CustomerStatus.INACTIVE))
         .suspendedCustomers(customerRepository.countByStatusAndIsDeletedFalse(CustomerStatus.SUSPENDED))
         .kycPendingCustomers(customerRepository.countByKycStatusAndIsDeletedFalse(KycStatus.PENDING))
-        .kycCompletedCustomers(customerRepository.countByKycStatusAndIsDeletedFalse(KycStatus.COMPLETED))
+        .kycCompletedCustomers(customerRepository.countByKycStatusAndIsDeletedFalse(KycStatus.APPROVED))
         .build();
   }
 
