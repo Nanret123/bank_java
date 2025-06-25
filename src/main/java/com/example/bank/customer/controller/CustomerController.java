@@ -27,7 +27,6 @@ import com.example.bank.customer.dtos.CustomerSearchRequest;
 import com.example.bank.customer.dtos.CustomerStatisticsResponse;
 import com.example.bank.customer.dtos.CustomerStatusUpdateRequest;
 import com.example.bank.customer.dtos.CustomerSummaryResponse;
-import com.example.bank.customer.dtos.RejectKycRequest;
 import com.example.bank.customer.dtos.UpdateCustomerRequest;
 import com.example.bank.customer.service.CustomerService;
 import com.example.bank.customer.validation.dtos.CustomerValidationRequest;
@@ -89,23 +88,6 @@ public class CustomerController {
       @RequestHeader("user-id") UUID userId) {
     customerService.restoreCustomer(id, userId);
     return ApiResponseUtil.success("Customer restored successfully");
-  }
-
-  @PatchMapping("/{id}/kyc/approve")
-  @Operation(summary = "Approve customer KYC")
-  public ResponseEntity<ApiResponseDto<Void>> approveKyc(@PathVariable UUID id) {
-    customerService.approveCustomerKyc(id);
-    return ApiResponseUtil.success("KYC approved successfully");
-  }
-
-
-  @PatchMapping("/{id}/kyc/reject")
-  @Operation(summary = "Reject customer KYC")
-  public ResponseEntity<ApiResponseDto<Void>> rejectKyc(
-      @PathVariable UUID id,
-      @RequestBody @Valid RejectKycRequest request) {
-    customerService.rejectCustomerKyc(id, request.getReason());
-    return ApiResponseUtil.success("KYC rejected successfully");
   }
 
   @GetMapping
