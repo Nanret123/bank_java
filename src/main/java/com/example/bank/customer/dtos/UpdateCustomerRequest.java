@@ -2,8 +2,8 @@ package com.example.bank.customer.dtos;
 
 import java.time.LocalDate;
 
+import com.example.bank.KYC.enums.IdType;
 import com.example.bank.customer.enums.CustomerType;
-import com.example.bank.customer.enums.IdType;
 import com.example.bank.customer.enums.MaritalStatus;
 import com.example.bank.customer.enums.ProofOfAddressType;
 import com.fasterxml.jackson.annotation.JsonInclude;

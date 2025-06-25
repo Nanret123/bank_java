@@ -1,4 +1,4 @@
-package com.example.bank.customer.enums;
+package com.example.bank.KYC.enums;
 
 public enum KycStatus {
     PENDING,

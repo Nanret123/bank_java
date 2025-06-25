@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.example.bank.KYC.enums.KycStatus;
 import com.example.bank.customer.enums.CustomerStatus;
 import com.example.bank.customer.enums.CustomerType;
-import com.example.bank.customer.enums.KycStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 

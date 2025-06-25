@@ -9,25 +9,22 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.example.bank.KYC.entity.KycProfile;
 import com.example.bank.customer.enums.CustomerStatus;
 import com.example.bank.customer.enums.CustomerType;
 import com.example.bank.customer.enums.Gender;
-import com.example.bank.customer.enums.IdType;
-import com.example.bank.customer.enums.KycStatus;
 import com.example.bank.customer.enums.MaritalStatus;
-import com.example.bank.customer.enums.ProofOfAddressType;
-import com.example.bank.customer.enums.RiskLevel;
-import com.example.bank.security.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
@@ -102,47 +99,8 @@ public class Customer {
     @Column(name = "country", length = 50)
     private String country;
 
-    // Identification Information
-    @Column(nullable = false, unique = true)
-    private String bvn;
-
-    @Column(name = "id_type")
-    @Enumerated(EnumType.STRING)
-    private IdType idType;
-
-    @Column(name = "id_number")
-    private String idNumber;
-
-    @Column(name = "id_expiry_date")
-    private LocalDate idExpiryDate;
-
-    @Column(name = "id_document_url")
-    private String idDocumentUrl;
-
-    @Column(name = "proof_of_address_type")
-    @Enumerated(EnumType.STRING)
-    private ProofOfAddressType proofOfAddressType;
-
-    @Column(name = "proof_of_address_url")
-    private String proofOfAddressUrl;
-
-    @Column(name = "passport_photo_url")
-    private String passportPhotoUrl;
-
-    @Column(name = "signature_url")
-    private String signatureUrl;
-
-    @Column(name = "is_bvn_verified")
-    @Builder.Default
-    private Boolean isBvnVerified = false;
-
-    @Column(name = "is_id_verified")
-    @Builder.Default
-    private Boolean isIdVerified = false;
-
-    @Column(name = "risk_level")
-    @Enumerated(EnumType.STRING)
-    private RiskLevel riskLevel;
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private KycProfile kyc;
 
     // Employment Information
     @Column(name = "occupation", length = 100)
@@ -157,16 +115,8 @@ public class Customer {
     @Column(name = "status", nullable = false, length = 20)
     private CustomerStatus status;
 
-    // KYC Information
-    @Column(name = "kyc_status", length = 20)
-    @Enumerated(EnumType.STRING)
-    private KycStatus kycStatus;
-
     @Column(name = "status_change_reason")
     private String statusChangeReason;
-
-    @Column(name = "verification_reason")
-    private String verificationReason;
 
     // Emergency Contact
     @Column(name = "emergency_contact_name", length = 100)
@@ -239,21 +189,5 @@ public class Customer {
 
     public boolean isActive() {
         return CustomerStatus.ACTIVE.equals(this.status);
-    }
-
-    public boolean isKycCompleted() {
-        return this.kycStatus != null && KycStatus.COMPLETED.equals(this.kycStatus);
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (status == null)
-            status = CustomerStatus.ACTIVE;
-        if (kycStatus == null)
-            kycStatus = KycStatus.PENDING;
-        if (isBvnVerified == null)
-            isBvnVerified = false;
-        if (isIdVerified == null)
-            isIdVerified = false;
     }
 }

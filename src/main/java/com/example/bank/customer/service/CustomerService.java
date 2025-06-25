@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.bank.KYC.enums.KycStatus;
 import com.example.bank.common.dto.PaginationRequest;
 import com.example.bank.customer.dtos.CreateCustomerRequest;
 import com.example.bank.customer.dtos.CustomerFilter;
@@ -23,7 +24,6 @@ import com.example.bank.customer.dtos.CustomerSummaryResponse;
 import com.example.bank.customer.dtos.UpdateCustomerRequest;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.enums.CustomerStatus;
-import com.example.bank.customer.enums.KycStatus;
 import com.example.bank.customer.exception.CustomerNotFoundException;
 import com.example.bank.customer.exception.DuplicateCustomerException;
 import com.example.bank.customer.interfaces.ICustomer;
@@ -221,33 +221,6 @@ public class CustomerService implements ICustomer {
     // request.getStatus(), request.getReason(),
     // userId);
     return customerMapper.toResponse(updatedCustomer);
-  }
-
-  @Override
-  @Transactional
-  public void approveCustomerKyc(UUID customerId) {
-    Customer customer = getCustomerEntityById(customerId);
-
-    customer.setKycStatus(KycStatus.COMPLETED);
-    customer.setUpdatedAt(LocalDateTime.now());
-
-    customerRepository.save(customer);
-  }
-
-  @Override
-  @Transactional
-  public void rejectCustomerKyc(UUID customerId, String reason) {
-    Customer customer = getCustomerEntityById(customerId);
-
-    if (customer.getKycStatus() == KycStatus.COMPLETED) {
-      throw new IllegalStateException("Cannot reject KYC that is already completed.");
-    }
-
-    customer.setKycStatus(KycStatus.REJECTED);
-    customer.setVerificationReason(reason);
-    customer.setUpdatedAt(LocalDateTime.now());
-
-    customerRepository.save(customer);
   }
 
   @Override

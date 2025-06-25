@@ -10,9 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import com.example.bank.KYC.enums.KycStatus;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.enums.CustomerStatus;
-import com.example.bank.customer.enums.KycStatus;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, UUID>, JpaSpecificationExecutor<Customer> {

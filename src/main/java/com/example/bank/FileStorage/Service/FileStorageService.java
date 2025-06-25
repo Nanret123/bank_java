@@ -20,11 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class CloudinaryFileStorageService {
+public class FileStorageService {
 
   private final Cloudinary cloudinary;
 
-  public CloudinaryFileStorageService(Cloudinary cloudinary) {
+  public FileStorageService(Cloudinary cloudinary) {
     this.cloudinary = cloudinary;
   }
 

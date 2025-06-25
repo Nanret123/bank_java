@@ -5,14 +5,13 @@ import java.util.List;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.bank.FileStorage.Service.CloudinaryFileStorageService;
+import com.example.bank.FileStorage.Service.FileStorageService;
 import com.example.bank.FileStorage.dto.FileUploadResponse;
 import com.example.bank.FileStorage.dto.MultipleFileUploadResponse;
 import com.example.bank.common.dto.ApiResponseDto;
@@ -30,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileStorageController {
 
-  private final CloudinaryFileStorageService fileService;
+  private final FileStorageService fileService;
 
   @PostMapping(value = "/avatars", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Upload a single file", description = "Upload a single file to Cloudinary")

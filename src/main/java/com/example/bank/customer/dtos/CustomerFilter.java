@@ -1,9 +1,9 @@
 package com.example.bank.customer.dtos;
 
+import com.example.bank.KYC.enums.KycStatus;
 import com.example.bank.common.dto.PaginationRequest;
 import com.example.bank.customer.enums.CustomerStatus;
 import com.example.bank.customer.enums.CustomerType;
-import com.example.bank.customer.enums.KycStatus;
 import com.example.bank.customer.enums.RiskLevel;
 
 import io.swagger.v3.oas.annotations.Parameter;

@@ -27,12 +27,7 @@ public interface ICustomer {
     // request);
     void deleteCustomer(UUID customerId, UUID userId);
     
-    void restoreCustomer(UUID customerId, UUID userId);
-
-    void approveCustomerKyc(UUID customerId);
-
-    void rejectCustomerKyc(UUID customerId, String reason);
-   
+    void restoreCustomer(UUID customerId, UUID userId);   
 
     // // Search and listing
     Page<CustomerSummaryResponse> getAllCustomers(CustomerFilter filter);
