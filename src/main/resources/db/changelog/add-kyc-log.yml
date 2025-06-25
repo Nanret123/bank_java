@@ -1,0 +1,121 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: bank
+      changes:
+
+        # Create table: kyc_profile
+        - createTable:
+            tableName: kyc_profiles
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: "gen_random_uuid()"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: customer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    foreignKeyName: fk_kyc_profile_customer
+                    references: customer(id)
+
+              - column:
+                  name: bvn
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: risk_level
+                  type: VARCHAR(50)
+
+              - column:
+                  name: kyc_status
+                  type: VARCHAR(20)
+
+              - column:
+                  name: rejection_reason
+                  type: TEXT
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+              - column:
+                  name: reviewed_by
+                  type: UUID
+
+              - column:
+                  name: reviewed_at
+                  type: TIMESTAMP
+
+        # Create table: kyc_document
+        - createTable:
+            tableName: kyc_documents
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: "gen_random_uuid()"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: file_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: cloudinary_url
+                  type: VARCHAR(1024)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: cloudinary_public_id
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: file_type
+                  type: VARCHAR(255)
+
+              - column:
+                  name: file_size
+                  type: BIGINT
+
+              - column:
+                  name: document_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: kyc_profile_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_kyc_document_profile
+                    references: kyc_profile(id)
+
+              - column:
+                  name: uploaded_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
