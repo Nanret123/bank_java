@@ -2,21 +2,54 @@ package com.example.bank.KYC.mapper;
 
 import java.util.List;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-import com.example.bank.KYC.dtos.KycProfileResponse;
-import com.example.bank.KYC.dtos.SubmitKycRequest;
+import com.example.bank.KYC.dto.KycDocumentDto;
+import com.example.bank.KYC.dto.KycProfileResponseDto;
+import com.example.bank.KYC.dto.KycSubmissionDto;
+import com.example.bank.KYC.dto.KycUpdateDto;
+import com.example.bank.KYC.entity.KycDocument;
 import com.example.bank.KYC.entity.KycProfile;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface KycMapper {
-
-  KycProfile toEntity(SubmitKycRequest request);
-
-  @Mapping(target = "customerName", expression = "java(kyc.getCustomer().getFirstName() + \" \" + kyc.getCustomer().getLastName())")
-  @Mapping(target = "customerId", source = "customer.id")
-  KycProfileResponse toResponse(KycProfile kyc);
-
-  List<KycProfileResponse> toResponseList(List<KycProfile> kycList);
+    
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "customer", ignore = true)
+    @Mapping(target = "status", constant = "PENDING")
+    @Mapping(target = "documents", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "rejectionReason", ignore = true)
+    @Mapping(target = "reviewedBy", ignore = true)
+    @Mapping(target = "reviewedAt", ignore = true)
+    KycProfile toEntity(KycSubmissionDto dto);
+    
+    @Mapping(target = "customerId", source = "customer.id")
+    @Mapping(target = "customerFirstName", source = "customer.firstName")
+    @Mapping(target = "customerLastName", source = "customer.lastName")
+    @Mapping(target = "customerEmail", source = "customer.email")
+    @Mapping(target = "customerPhone", source = "customer.phoneNumber")
+    KycProfileResponseDto toResponseDto(KycProfile entity);
+    
+    List<KycDocumentDto> toDocumentDtos(List<KycDocument> documents);
+    
+    KycDocumentDto toDocumentDto(KycDocument document);
+    
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "customer", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "documents", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "rejectionReason", ignore = true)
+    @Mapping(target = "reviewedBy", ignore = true)
+    @Mapping(target = "reviewedAt", ignore = true)
+    void updateEntityFromDto(KycUpdateDto dto, @MappingTarget KycProfile entity);
 }

@@ -22,11 +22,9 @@ import lombok.NoArgsConstructor;
 public class KycUpdateDto {
 
   @Schema(description = "Bank Verification Number", example = "12345678901")
-  @NotNull(message = "Customer BVN is required")
   private String bvn;
 
   @Schema(description = "Risk level of the customer", example = "LOW")
-  @NotNull(message = "Customer risk level is required")
   private RiskLevel riskLevel;
 
   @Schema(description = "Map of document type to the uploaded document file", type = "object")
