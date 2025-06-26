@@ -27,6 +27,7 @@ import com.example.bank.customer.dtos.CustomerSearchRequest;
 import com.example.bank.customer.dtos.CustomerStatisticsResponse;
 import com.example.bank.customer.dtos.CustomerStatusUpdateRequest;
 import com.example.bank.customer.dtos.CustomerSummaryResponse;
+import com.example.bank.customer.dtos.CustomerVerificationRequest;
 import com.example.bank.customer.dtos.UpdateCustomerRequest;
 import com.example.bank.customer.service.CustomerService;
 import com.example.bank.customer.validation.dtos.CustomerValidationRequest;
@@ -73,7 +74,6 @@ public class CustomerController {
     return ApiResponseUtil.success("Customer updated successfully", response);
   }
 
-  // ✅ Soft delete customer
   @DeleteMapping("/{id}")
   @Operation(summary = "Soft delete customer")
   public ResponseEntity<ApiResponseDto<Void>> deleteCustomer(@PathVariable UUID id,
@@ -130,10 +130,11 @@ public class CustomerController {
   }
 
   @PostMapping("/validate")
-  @Operation(summary = "Validate customer data (e.g. uniqueness, structure)")
-  public ResponseEntity<ApiResponseDto<Void>> validateCustomer(@RequestBody @Valid CustomerValidationRequest request) {
-    customerService.validateCustomer(request);
-    return ApiResponseUtil.success("Customer validation passed");
+  @Operation(summary = "Validate customer data")
+  public ResponseEntity<ApiResponseDto<Void>> verifyCustomer(@RequestBody @Valid CustomerVerificationRequest request,  @AuthenticationPrincipal UserPrincipal userDetails) {
+    UUID userId = userDetails.getId();
+    customerService.verifyCustomer(request, userId);
+    return ApiResponseUtil.success("Customer validation status set successfully");
   }
 
   // ✅ Get statistics

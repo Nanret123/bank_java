@@ -21,6 +21,7 @@ import com.example.bank.customer.dtos.CustomerSearchRequest;
 import com.example.bank.customer.dtos.CustomerStatisticsResponse;
 import com.example.bank.customer.dtos.CustomerStatusUpdateRequest;
 import com.example.bank.customer.dtos.CustomerSummaryResponse;
+import com.example.bank.customer.dtos.CustomerVerificationRequest;
 import com.example.bank.customer.dtos.UpdateCustomerRequest;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.enums.CustomerStatus;
@@ -33,6 +34,7 @@ import com.example.bank.customer.validation.ValidationService;
 import com.example.bank.customer.validation.dtos.CustomerValidationRequest;
 import com.example.bank.customer.validation.dtos.ValidationResponse;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -202,6 +204,17 @@ public class CustomerService implements ICustomer {
     Page<Customer> customers = customerRepository.findAll(specification, pageable);
 
     return customers.map(customerMapper::toSummaryResponse);
+  }
+
+  @Override
+  public void verifyCustomer(CustomerVerificationRequest request, UUID userId) {
+    Customer customer = getCustomerEntityById(request.getCustomerId());
+
+    customer.setVerificationStatus(request.getVerificationStatus());
+    customer.setApprovedBy(userId);
+    customer.setVerifiedAt(LocalDateTime.now());
+
+    customerRepository.save(customer);
   }
 
   @Override

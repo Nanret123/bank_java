@@ -12,6 +12,7 @@ import com.example.bank.customer.dtos.CustomerSearchRequest;
 import com.example.bank.customer.dtos.CustomerStatisticsResponse;
 import com.example.bank.customer.dtos.CustomerStatusUpdateRequest;
 import com.example.bank.customer.dtos.CustomerSummaryResponse;
+import com.example.bank.customer.dtos.CustomerVerificationRequest;
 import com.example.bank.customer.dtos.UpdateCustomerRequest;
 import com.example.bank.customer.validation.dtos.CustomerValidationRequest;
 
@@ -27,7 +28,9 @@ public interface ICustomer {
     // request);
     void deleteCustomer(UUID customerId, UUID userId);
     
-    void restoreCustomer(UUID customerId, UUID userId);   
+    void restoreCustomer(UUID customerId, UUID userId); 
+    
+    void verifyCustomer(CustomerVerificationRequest request,  UUID userId);
 
     // // Search and listing
     Page<CustomerSummaryResponse> getAllCustomers(CustomerFilter filter);
