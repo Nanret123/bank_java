@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.example.bank.customer.enums.CustomerType;
 import com.example.bank.customer.enums.Gender;
 import com.example.bank.customer.enums.MaritalStatus;
+import com.example.bank.customer.enums.VerificationStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -48,7 +49,7 @@ public class CreateCustomerRequest {
   private LocalDate dateOfBirth;
 
   @Schema(description = "Gender of the customer", example = "Male")
-  @NotBlank(message = "Gender is required")
+  @NotNull(message = "Gender is required")
   private Gender gender;
 
   @Schema(description = "Marital status of the customer", example = "MARRIED")

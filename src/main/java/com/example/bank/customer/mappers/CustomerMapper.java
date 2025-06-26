@@ -25,6 +25,7 @@ public interface CustomerMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "status", constant = "ACTIVE")
+  @Mapping(target = "verificationStatus", constant = "PENDING")
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   @Mapping(target = "createdBy", ignore = true)

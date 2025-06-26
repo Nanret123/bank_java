@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.example.bank.KYC.enums.KycStatus;
 import com.example.bank.customer.enums.CustomerStatus;
 import com.example.bank.customer.enums.CustomerType;
+import com.example.bank.customer.enums.VerificationStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -117,6 +118,9 @@ public class CustomerResponse {
 
   @Schema(description = "Branch code where the customer was registered")
   private String branchCode;
+
+  @Schema(description = "Verification status of the customer", example = "Pending")
+  private VerificationStatus verificationStatus;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   @Schema(description = "Timestamp when the customer record was created")
