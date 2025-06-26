@@ -21,7 +21,7 @@ public interface KycMapper {
     
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "customer", ignore = true)
-    @Mapping(target = "status", constant = "PENDING")
+    @Mapping(target = "kycStatus", constant = "PENDING")
     @Mapping(target = "documents", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -44,7 +44,7 @@ public interface KycMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "customer", ignore = true)
-    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "kycStatus", ignore = true)
     @Mapping(target = "documents", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

@@ -16,16 +16,16 @@ import com.example.bank.KYC.enums.KycStatus;
 @Repository
 public interface KycRepository extends JpaRepository<KycProfile, UUID> {
   // Find KYC by customer ID
-  @Query("SELECT k FROM Kyc k WHERE k.customer.id = :customerId AND k.isDeleted = false")
-  Optional<KycProfile> findByCustomerId(@Param("customerId") UUID customerId);
+  @Query("SELECT k FROM KycProfile k WHERE k.customer.id = :customerId AND k.customer.isDeleted = false")
+  Optional<KycProfile> findByCustomer_Id(@Param("customerId") UUID customerId);
 
   boolean existsByCustomerId(UUID customerId);
 
-  Page<KycProfile> findByStatus(KycStatus status, Pageable pageable);
+  Page<KycProfile> findByKycStatus(KycStatus status, Pageable pageable);
 
-  @Query("SELECT k FROM KycProfile k WHERE k.status = :status AND k.createdAt >= CURRENT_DATE")
+  @Query("SELECT k FROM KycProfile k WHERE k.kycStatus = :status AND k.createdAt >= CURRENT_DATE")
   Page<KycProfile> findTodaySubmissionsByStatus(@Param("status") KycStatus status, Pageable pageable);
 
-  @Query("SELECT COUNT(k) FROM KycProfile k WHERE k.status = :status")
-  long countByStatus(@Param("status") KycStatus status);
+  @Query("SELECT COUNT(k) FROM KycProfile k WHERE k.kycStatus = :status")
+  long countByKycStatus(@Param("status") KycStatus status);
 }

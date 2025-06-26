@@ -18,12 +18,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "Response DTO representing a user's KYC profile")
 public class KycProfileResponseDto {
-
-  @Schema(description = "Unique identifier for the KYC profile", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
-  private UUID id;
-
+  
   @Schema(description = "Unique identifier for the customer", example = "1001")
-  private Long customerId;
+  private UUID customerId;
 
   @Schema(description = "Customer's first name", example = "John")
   private String customerFirstName;

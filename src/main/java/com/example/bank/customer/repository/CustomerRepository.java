@@ -31,5 +31,5 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID>, JpaSp
   long countByStatusAndIsDeletedFalse(CustomerStatus status);
 
   // Count KYC completed customers that are not soft-deleted
-  long countByKycStatusAndIsDeletedFalse(KycStatus kycStatus);
+  long countByKyc_KycStatusAndIsDeletedFalse(KycStatus status);
 }

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.bank.FileStorage.Service.FileStorageService;
 import com.example.bank.FileStorage.dto.FileUploadResponse;
+import com.example.bank.FileStorage.exceptions.FileUploadException;
 import com.example.bank.KYC.dto.KycApprovalDto;
 import com.example.bank.KYC.dto.KycProfileResponseDto;
 import com.example.bank.KYC.dto.KycRejectionDto;
@@ -33,7 +34,6 @@ import com.example.bank.KYC.repository.KycDocumentRepository;
 import com.example.bank.KYC.repository.KycRepository;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.repository.CustomerRepository;
-import com.example.bank.FileStorage.exceptions.FileUploadException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -199,18 +199,18 @@ public class KycService implements IKycService {
   @Override
   @Transactional(readOnly = true)
   public Page<KycProfileResponseDto> getKycProfilesByStatus(KycStatus status, Pageable pageable) {
-    Page<KycProfile> profiles = kycRepository.findByStatus(status, pageable);
+    Page<KycProfile> profiles = kycRepository.findByKycStatus(status, pageable);
     return profiles.map(kycMapper::toResponseDto);
   }
 
   @Override
   @Transactional(readOnly = true)
   public long getKycCountByStatus(KycStatus status) {
-    return kycRepository.countByStatus(status);
+    return kycRepository.countByKycStatus(status);
   }
 
   private KycProfile getKycProfileEntity(UUID customerId) {
-    return kycRepository.findByCustomerId(customerId)
+    return kycRepository.findByCustomer_Id(customerId)
         .orElseThrow(() -> new KycNotFoundException("KYC profile not found for customer"));
   }
 

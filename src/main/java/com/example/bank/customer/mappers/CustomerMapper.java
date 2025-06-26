@@ -32,8 +32,6 @@ public interface CustomerMapper {
   @Mapping(target = "isDeleted", constant = "false")
   @Mapping(target = "deletedAt", ignore = true)
   @Mapping(target = "deletedBy", ignore = true)
-  @Mapping(target = "kycStatus", constant = "PENDING")
-  @Mapping(target = "riskRating", constant = "MEDIUM")
   Customer toEntity(CreateCustomerRequest request);
 
   @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
