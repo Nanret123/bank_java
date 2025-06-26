@@ -69,7 +69,8 @@ public class CustomerController {
   public ResponseEntity<ApiResponseDto<CustomerResponse>> updateCustomer(
       @PathVariable UUID id,
       @Valid @RequestBody UpdateCustomerRequest request,
-      @RequestHeader("user-id") UUID userId) {
+      @AuthenticationPrincipal UserPrincipal userDetails) {
+        UUID userId = userDetails.getId();
     CustomerResponse response = customerService.updateCustomer(id, request, userId);
     return ApiResponseUtil.success("Customer updated successfully", response);
   }

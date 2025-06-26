@@ -79,6 +79,5 @@ public class UpdateCustomerRequest {
     private String emergencyContactPhone;
 
     @Schema(description = "Branch code associated with the customer", example = "BR001")
-    @NotBlank(message = "Branch code is required")
     private String branchCode;
 }
