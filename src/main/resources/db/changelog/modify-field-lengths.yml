@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-city-state-country-lengths
+      author: bank
+      changes:
+        - modifyDataType:
+            tableName: customers
+            columnName: city
+            newDataType: varchar(100)
+        - modifyDataType:
+            tableName: customers
+            columnName: state
+            newDataType: varchar(100)
+        - modifyDataType:
+            tableName: customers
+            columnName: country
+            newDataType: varchar(100)
