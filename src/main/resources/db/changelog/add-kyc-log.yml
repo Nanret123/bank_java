@@ -23,7 +23,7 @@ databaseChangeLog:
                     nullable: false
                     unique: true
                     foreignKeyName: fk_kyc_profile_customer
-                    references: customer(id)
+                    references: customers(id)
 
               - column:
                   name: bvn
@@ -113,7 +113,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     foreignKeyName: fk_kyc_document_profile
-                    references: kyc_profile(id)
+                    references: kyc_profiles(id)
 
               - column:
                   name: uploaded_at
