@@ -2,6 +2,7 @@ package com.example.bank.customer.validation;
 
 import org.springframework.stereotype.Service;
 
+import com.example.bank.common.exception.ValidationException;
 import com.example.bank.customer.repository.CustomerRepository;
 import com.example.bank.customer.validation.dtos.CustomerValidationRequest;
 import com.example.bank.customer.validation.dtos.ValidationResponse;
@@ -16,16 +17,13 @@ public class ValidationService {
 
   private final CustomerRepository customerRepo;
 
-  public ValidationResponse validateCustomer(CustomerValidationRequest request) {
-    ValidationResponse response = new ValidationResponse();
+  public void validateCustomer(CustomerValidationRequest request) {
+    if (request.getEmail() != null && customerRepo.existsByEmail(request.getEmail())) {
+      throw new ValidationException("Email already exists");
+    }
 
-     if (request.getEmail() != null) {
-            response.setEmailExists(customerRepo.existsByEmail(request.getEmail()));
-        }
-
-        if (request.getPhoneNumber() != null) {
-            response.setPhoneNumberExists(customerRepo.existsByPhoneNumber(request.getPhoneNumber()));
-        }
-    return response;
+    if (request.getPhoneNumber() != null && customerRepo.existsByPhoneNumber(request.getPhoneNumber())) {
+      throw new ValidationException("Phone number already exists");
+    }
   }
 }
