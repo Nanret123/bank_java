@@ -34,7 +34,13 @@ public class KycSubmissionDto {
   @Schema(description = "Unique identifier for the customer", required = true, example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
   private UUID customerId;
 
-  @Schema(description = "Map of document type to the uploaded document file", type = "object")
-  private Map<DocumentType, MultipartFile> documents;
+  @Schema(description="Document type for verification")
+  @NotNull(message="Document type is required")
+  private DocumentType documentType;
+
+ @Schema(description = "Upload of ID document")
+ @NotNull(message="document required for verification")
+  private MultipartFile identityDocument;
+
 
 }
