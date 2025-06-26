@@ -83,11 +83,6 @@
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -108,9 +103,24 @@
 			<version>1.0.2</version>
     </dependency>
 		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>1.6.0.Beta1</version> 
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct</artifactId>
+    <version>1.6.0.Beta1</version>
+  </dependency>
+
+  <!-- MapStruct Annotation Processor -->
+  <dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct-processor</artifactId>
+    <version>1.6.0.Beta1</version>
+    <scope>provided</scope>
+  </dependency>
+
+  <!-- Lombok -->
+  <dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <scope>provided</scope>
   </dependency>
 	</dependencies>
 
@@ -125,6 +135,11 @@
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
 						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>1.6.0.Beta1</version>
+            </path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
@@ -132,11 +147,6 @@
         <groupId>org.liquibase</groupId>
         <artifactId>liquibase-maven-plugin</artifactId>
       </plugin>
-			<path>
-					<groupId>org.mapstruct</groupId>
-					<artifactId>mapstruct-processor</artifactId>
-					<version>1.6.0.Beta1</version>
-			</path>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
