@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-verification-status-to-customer
+      author: bank
+      changes:
+        - addColumn:
+            tableName: customers
+            columns:
+              - column:
+                  name: verification_status
+                  type: VARCHAR(20)
+                  defaultValue: 'PENDING'
+
+              - column:
+                  name: verified_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP

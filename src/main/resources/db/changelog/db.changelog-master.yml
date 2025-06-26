@@ -13,4 +13,6 @@ databaseChangeLog:
       file: "db/changelog/add-customer-table.yml"
   - include:
       file: "db/changelog/add-kyc-log.yml"
+  - include:
+      file: /db/changelog/add-fields-to-customer.yml
 

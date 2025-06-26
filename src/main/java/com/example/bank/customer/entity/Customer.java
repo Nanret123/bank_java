@@ -14,6 +14,7 @@ import com.example.bank.customer.enums.CustomerStatus;
 import com.example.bank.customer.enums.CustomerType;
 import com.example.bank.customer.enums.Gender;
 import com.example.bank.customer.enums.MaritalStatus;
+import com.example.bank.customer.enums.VerificationStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -160,6 +161,12 @@ public class Customer {
 
     @JoinColumn(name = "approved_by")
     private UUID approvedBy;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
+
+    private LocalDateTime verifiedAt;
 
     // Relationships (if using JPA relationships)
     // @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch =
