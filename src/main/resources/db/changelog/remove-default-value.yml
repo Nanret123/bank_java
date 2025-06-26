@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: remove-default-from-verified-at
+      author: bank
+      changes:
+        - modifyDataType:
+            tableName: customers
+            columnName: verified_at
+            newDataType: TIMESTAMP

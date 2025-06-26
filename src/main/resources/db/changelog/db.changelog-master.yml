@@ -15,4 +15,6 @@ databaseChangeLog:
       file: "db/changelog/add-kyc-log.yml"
   - include:
       file: /db/changelog/add-fields-to-customer.yml
+  - include:
+      file: db/changelog/remove-default-value.yml
 
