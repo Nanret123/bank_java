@@ -24,8 +24,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Schema(description = "First name of the customer", example = "John")
+@Schema(description="Data Transfer Object to create a new customer")
 public class CreateCustomerRequest {
+  @Schema(description = "First name of the customer", example = "John")
   @NotBlank(message = "First name is required")
   private String firstName;
 
