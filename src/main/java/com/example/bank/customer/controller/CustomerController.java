@@ -2,12 +2,14 @@ package com.example.bank.customer.controller;
 
 import java.util.UUID;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +32,6 @@ import com.example.bank.customer.dtos.CustomerSummaryResponse;
 import com.example.bank.customer.dtos.CustomerVerificationRequest;
 import com.example.bank.customer.dtos.UpdateCustomerRequest;
 import com.example.bank.customer.service.CustomerService;
-import com.example.bank.customer.validation.dtos.CustomerValidationRequest;
 import com.example.bank.security.service.UserPrincipal;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -70,7 +71,7 @@ public class CustomerController {
       @PathVariable UUID id,
       @Valid @RequestBody UpdateCustomerRequest request,
       @AuthenticationPrincipal UserPrincipal userDetails) {
-        UUID userId = userDetails.getId();
+    UUID userId = userDetails.getId();
     CustomerResponse response = customerService.updateCustomer(id, request, userId);
     return ApiResponseUtil.success("Customer updated successfully", response);
   }
@@ -78,7 +79,8 @@ public class CustomerController {
   @DeleteMapping("/{id}")
   @Operation(summary = "Soft delete customer")
   public ResponseEntity<ApiResponseDto<Void>> deleteCustomer(@PathVariable UUID id,
-      @RequestHeader("user-id") UUID userId) {
+      @AuthenticationPrincipal UserPrincipal userDetails) {
+    UUID userId = userDetails.getId();
     customerService.deleteCustomer(id, userId);
     return ApiResponseUtil.success("Customer deleted successfully", null);
   }
@@ -86,28 +88,32 @@ public class CustomerController {
   @PatchMapping("/{id}/restore")
   @Operation(summary = "Restore a soft-deleted customer")
   public ResponseEntity<ApiResponseDto<Void>> restoreCustomer(@PathVariable UUID id,
-      @RequestHeader("user-id") UUID userId) {
+      @AuthenticationPrincipal UserPrincipal userDetails) {
+    UUID userId = userDetails.getId();
     customerService.restoreCustomer(id, userId);
     return ApiResponseUtil.success("Customer restored successfully");
   }
 
   @GetMapping
   @Operation(summary = "Get all customers with filters (Admin Only)")
-  public ResponseEntity<ApiResponseDto<Page<CustomerSummaryResponse>>> getAllCustomers(CustomerFilter filter) {
+  public ResponseEntity<ApiResponseDto<Page<CustomerSummaryResponse>>> getAllCustomers(
+      @Valid @ModelAttribute @ParameterObject CustomerFilter filter) {
     Page<CustomerSummaryResponse> customers = customerService.getAllCustomers(filter);
     return ApiResponseUtil.success("Customers retrieved successfully", customers);
   }
 
   @GetMapping("/search")
   @Operation(summary = "Search customers (Admin Only)")
-  public ResponseEntity<ApiResponseDto<Page<CustomerSummaryResponse>>> searchCustomers(CustomerSearchRequest request) {
+  public ResponseEntity<ApiResponseDto<Page<CustomerSummaryResponse>>> searchCustomers(
+      @Valid @ModelAttribute @ParameterObject CustomerSearchRequest request) {
     Page<CustomerSummaryResponse> customers = customerService.searchCustomers(request);
     return ApiResponseUtil.success("Search completed successfully", customers);
   }
 
   @GetMapping("/active")
   @Operation(summary = "Get all active (non-deleted) customers")
-  public ResponseEntity<ApiResponseDto<Page<CustomerSummaryResponse>>> getAllActiveCustomers(CustomerFilter filter) {
+  public ResponseEntity<ApiResponseDto<Page<CustomerSummaryResponse>>> getAllActiveCustomers(
+      @Valid @ModelAttribute @ParameterObject CustomerFilter filter) {
     Page<CustomerSummaryResponse> customers = customerService.getAllActiveCustomers(filter);
     return ApiResponseUtil.success("Active customers retrieved successfully", customers);
   }
@@ -115,7 +121,7 @@ public class CustomerController {
   @GetMapping("/search/active")
   @Operation(summary = "Search active (non-deleted) customers")
   public ResponseEntity<ApiResponseDto<Page<CustomerSummaryResponse>>> searchActiveCustomers(
-      CustomerSearchRequest request) {
+      @Valid @ModelAttribute @ParameterObject CustomerSearchRequest request) {
     Page<CustomerSummaryResponse> customers = customerService.searchActiveCustomers(request);
     return ApiResponseUtil.success("Search completed successfully", customers);
   }
@@ -125,14 +131,16 @@ public class CustomerController {
   public ResponseEntity<ApiResponseDto<CustomerResponse>> updateCustomerStatus(
       @PathVariable UUID id,
       @RequestBody @Valid CustomerStatusUpdateRequest request,
-      @RequestHeader("user-id") UUID userId) {
+      @AuthenticationPrincipal UserPrincipal userDetails) {
+    UUID userId = userDetails.getId();
     CustomerResponse response = customerService.updateCustomerStatus(id, request, userId);
     return ApiResponseUtil.success("Customer status updated successfully", response);
   }
 
   @PostMapping("/validate")
   @Operation(summary = "Validate customer data")
-  public ResponseEntity<ApiResponseDto<Void>> verifyCustomer(@RequestBody @Valid CustomerVerificationRequest request,  @AuthenticationPrincipal UserPrincipal userDetails) {
+  public ResponseEntity<ApiResponseDto<Void>> verifyCustomer(@RequestBody @Valid CustomerVerificationRequest request,
+      @AuthenticationPrincipal UserPrincipal userDetails) {
     UUID userId = userDetails.getId();
     customerService.verifyCustomer(request, userId);
     return ApiResponseUtil.success("Customer validation status set successfully");

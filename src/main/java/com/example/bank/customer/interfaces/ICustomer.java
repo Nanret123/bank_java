@@ -46,7 +46,7 @@ public interface ICustomer {
     CustomerResponse updateCustomerStatus(UUID customerId, CustomerStatusUpdateRequest request, UUID userId);
 
     // // Validation and verification
-    void validateCustomer(CustomerValidationRequest request);
+    //void validateCustomer(CustomerValidationRequest request);
 
     // // Reporting and analytics
      CustomerStatisticsResponse getCustomerStatistics();

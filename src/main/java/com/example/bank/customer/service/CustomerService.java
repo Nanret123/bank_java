@@ -50,7 +50,7 @@ public class CustomerService implements ICustomer {
   @Override
   public CustomerResponse createCustomer(CreateCustomerRequest request, UUID userId) {
     // Validate request
-    validationService.validateCustomer(
+     validationService.validateCustomer(
         CustomerValidationRequest.builder()
             .email(request.getEmail())
             .phoneNumber(request.getPhoneNumber())
@@ -124,7 +124,8 @@ public class CustomerService implements ICustomer {
   @Override
   public void restoreCustomer(UUID customerId, UUID userId) {
 
-    Customer customer = getCustomerEntityById(customerId);
+    Customer customer =  customerRepository.findById(customerId)
+        .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
 
     // Soft delete
     customer.setIsDeleted(false);
@@ -250,18 +251,18 @@ public class CustomerService implements ICustomer {
         .build();
   }
 
-  @Override
-  @Transactional(readOnly = true)
-  public void validateCustomer(CustomerValidationRequest request) {
-    log.debug("Validating customer with email: {}, phone: {}, idNumber: {}",
-        request.getEmail(), request.getPhoneNumber());
+  // @Override
+  // @Transactional(readOnly = true)
+  // public void validateCustomer(CustomerValidationRequest request) {
+  //   log.debug("Validating customer with email: {}, phone: {}, idNumber: {}",
+  //       request.getEmail(), request.getPhoneNumber());
 
-    ValidationResponse validation = validationService.validateCustomer(request);
+  //   ValidationResponse validation = validationService.validateCustomer(request);
 
-    if (!validation.isValid()) {
-      throw new DuplicateCustomerException("Customer validation failed: " + validation.getErrorsAsString());
-    }
-  }
+  //   if (!validation.isValid()) {
+  //     throw new DuplicateCustomerException("Customer validation failed: " + validation.getErrorsAsString());
+  //   }
+  //}
 
   private Pageable createPageable(PaginationRequest filter) {
     Sort sort = createSort(filter.getSortBy(), filter.getSortDirection());

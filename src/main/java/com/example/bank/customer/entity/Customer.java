@@ -91,13 +91,13 @@ public class Customer {
     @Column(name = "residential_address", length = 255)
     private String residentialAddress;
 
-    @Column(name = "city", length = 50)
+    @Column(name = "city", length = 100)
     private String city;
 
-    @Column(name = "state", length = 50)
+    @Column(name = "state", length = 100)
     private String state;
 
-    @Column(name = "country", length = 50)
+    @Column(name = "country", length = 100)
     private String country;
 
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

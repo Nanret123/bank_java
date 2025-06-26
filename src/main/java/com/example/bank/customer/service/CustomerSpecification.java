@@ -39,7 +39,7 @@ public class CustomerSpecification {
       }
 
        // Join with KycProfile
-      Join<Customer, KycProfile> kycJoin = root.join("kycProfile", JoinType.LEFT);
+      Join<Customer, KycProfile> kycJoin = root.join("kyc", JoinType.LEFT);
 
             // Filter by KYC status from KycProfile
       if (filter.getKycStatus() != null) {
@@ -82,7 +82,10 @@ public class CustomerSpecification {
 
       // Search in customer name
       searchPredicates.add(criteriaBuilder.like(
-          criteriaBuilder.lower(root.get("customerName")), searchPattern));
+          criteriaBuilder.lower(root.get("firstName")), searchPattern));
+
+          searchPredicates.add(criteriaBuilder.like(
+          criteriaBuilder.lower(root.get("lastName")), searchPattern));
 
       // Search in email
       searchPredicates.add(criteriaBuilder.like(

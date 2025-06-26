@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import com.example.bank.customer.enums.CustomerType;
 import com.example.bank.customer.enums.Gender;
 import com.example.bank.customer.enums.MaritalStatus;
-import com.example.bank.customer.enums.VerificationStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
