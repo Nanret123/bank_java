@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.example.bank.KYC.dto.KycApprovalDto;
+import com.example.bank.KYC.dto.KycFilter;
 import com.example.bank.KYC.dto.KycProfileResponseDto;
 import com.example.bank.KYC.dto.KycRejectionDto;
 import com.example.bank.KYC.dto.KycSubmissionDto;
@@ -27,7 +28,7 @@ public interface IKycService {
     
     void deleteKycFiles(UUID customerId, List<UUID> documentIds);
     
-    Page<KycProfileResponseDto> getKycProfilesByStatus(KycStatus status, Pageable pageable);
+    Page<KycProfileResponseDto> getKycProfilesByStatus(KycFilter filter);
     
     long getKycCountByStatus(KycStatus status);
 }
