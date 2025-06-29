@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,7 @@ import com.example.bank.KYC.entity.KycProfile;
 import com.example.bank.KYC.enums.KycStatus;
 
 @Repository
-public interface KycRepository extends JpaRepository<KycProfile, UUID> {
+public interface KycRepository extends JpaRepository<KycProfile, UUID>,  JpaSpecificationExecutor<KycProfile> {
   // Find KYC by customer ID
   @Query("SELECT k FROM KycProfile k WHERE k.customer.id = :customerId AND k.customer.isDeleted = false")
   Optional<KycProfile> findByCustomer_Id(@Param("customerId") UUID customerId);

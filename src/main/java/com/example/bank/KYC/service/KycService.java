@@ -3,27 +3,26 @@ package com.example.bank.KYC.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.bank.FileStorage.Service.FileStorageService;
 import com.example.bank.FileStorage.dto.FileUploadResponse;
-import com.example.bank.FileStorage.exceptions.FileUploadException;
 import com.example.bank.KYC.dto.KycApprovalDto;
+import com.example.bank.KYC.dto.KycFilter;
 import com.example.bank.KYC.dto.KycProfileResponseDto;
 import com.example.bank.KYC.dto.KycRejectionDto;
 import com.example.bank.KYC.dto.KycSubmissionDto;
 import com.example.bank.KYC.dto.KycUpdateDto;
 import com.example.bank.KYC.entity.KycDocument;
 import com.example.bank.KYC.entity.KycProfile;
-import com.example.bank.KYC.enums.DocumentType;
 import com.example.bank.KYC.enums.KycStatus;
 import com.example.bank.KYC.exceptions.InvalidKycStatusException;
 import com.example.bank.KYC.exceptions.KycAlreadyExistsException;
@@ -32,6 +31,8 @@ import com.example.bank.KYC.interfaces.IKycService;
 import com.example.bank.KYC.mapper.KycMapper;
 import com.example.bank.KYC.repository.KycDocumentRepository;
 import com.example.bank.KYC.repository.KycRepository;
+import com.example.bank.common.dto.PaginationRequest;
+import com.example.bank.common.util.BvnGenerator;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.repository.CustomerRepository;
 
@@ -59,48 +60,34 @@ public class KycService implements IKycService {
     Customer customer = customerRepository.findById(submissionDto.getCustomerId())
         .orElseThrow(() -> new KycNotFoundException("Customer not found"));
 
+    String generatedBvn = BvnGenerator.generateBvn();
+
     KycProfile kycProfile = kycMapper.toEntity(submissionDto);
+    kycProfile.setBvn(generatedBvn);
     kycProfile.setCustomer(customer);
     kycProfile.setDocuments(new ArrayList<>());
 
     KycProfile savedProfile = kycRepository.save(kycProfile);
 
     // Handle document uploads
-    if (submissionDto.getDocuments() != null && !submissionDto.getDocuments().isEmpty()) {
-      List<KycDocument> documents = uploadDocuments(savedProfile, submissionDto.getDocuments());
-      savedProfile.setDocuments(documents);
-    }
+    FileUploadResponse fileResponse = fileService.uploadFile(submissionDto.getDocument(), "kyc_documents");
+
+    KycDocument document = KycDocument.builder()
+        .documentType(submissionDto.getDocumentType())
+        .fileName(fileResponse.getOriginalFileName())
+        .fileType(fileResponse.getContentType())
+        .fileSize(fileResponse.getSize())
+        .cloudinaryUrl(fileResponse.getUrl())
+        .cloudinaryPublicId(fileResponse.getPublicId())
+        .uploadedAt(fileResponse.getUploadedAt())
+        .kycProfile(savedProfile)
+        .build();
+
+    documentRepository.save(document);
+    savedProfile.getDocuments().add(document);
 
     log.info("KYC submitted successfully for customer: {}", submissionDto.getCustomerId());
     return kycMapper.toResponseDto(savedProfile);
-  }
-
-  private List<KycDocument> uploadDocuments(KycProfile kycProfile, Map<DocumentType, MultipartFile> documents) {
-    return documents.entrySet().stream()
-        .map(entry -> {
-          DocumentType docType = entry.getKey();
-          MultipartFile file = entry.getValue();
-
-          try {
-            FileUploadResponse uploadResponse = fileService.uploadFile(file, "kyc/" + kycProfile.getCustomer().getId());
-
-            return KycDocument.builder()
-                .fileName(uploadResponse.getOriginalFileName())
-                .cloudinaryUrl(uploadResponse.getUrl())
-                .cloudinaryPublicId(uploadResponse.getPublicId())
-                .fileType(uploadResponse.getContentType())
-                .fileSize(uploadResponse.getSize())
-                .documentType(docType)
-                .kycProfile(kycProfile)
-                .build();
-
-          } catch (Exception e) {
-            log.error("Failed to upload document for customer: {}, document type: {}",
-                kycProfile.getCustomer().getId(), docType, e);
-            throw new FileUploadException("Failed to upload document: " + file.getOriginalFilename(), e);
-          }
-        })
-        .collect(Collectors.toList());
   }
 
   @Override
@@ -118,12 +105,30 @@ public class KycService implements IKycService {
     KycProfile savedProfile = kycRepository.save(kycProfile);
 
     // Handle new document uploads
-    if (updateDto.getDocuments() != null && !updateDto.getDocuments().isEmpty()) {
-      List<KycDocument> newDocuments = uploadDocuments(savedProfile, updateDto.getDocuments());
-      savedProfile.getDocuments().addAll(newDocuments);
+    if (updateDto.getDocument() != null) {
+      FileUploadResponse fileResponse = fileService.uploadFile(updateDto.getDocument(), "kyc_documents");
+
+      KycDocument document = KycDocument.builder()
+          .documentType(updateDto.getDocumentType())
+          .fileName(fileResponse.getOriginalFileName())
+          .fileType(fileResponse.getContentType())
+          .fileSize(fileResponse.getSize())
+          .cloudinaryUrl(fileResponse.getUrl())
+          .cloudinaryPublicId(fileResponse.getPublicId())
+          .uploadedAt(fileResponse.getUploadedAt())
+          .kycProfile(savedProfile)
+          .build();
+
+      // Save the document
+      documentRepository.save(document);
+
+      // Add to profile’s documents list (ensure it's initialized)
+      if (savedProfile.getDocuments() == null) {
+        savedProfile.setDocuments(new ArrayList<>());
+      }
+      savedProfile.getDocuments().add(document);
     }
 
-    log.info("KYC updated successfully for customer: {}", customerId);
     return kycMapper.toResponseDto(savedProfile);
   }
 
@@ -198,8 +203,13 @@ public class KycService implements IKycService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<KycProfileResponseDto> getKycProfilesByStatus(KycStatus status, Pageable pageable) {
-    Page<KycProfile> profiles = kycRepository.findByKycStatus(status, pageable);
+  public Page<KycProfileResponseDto> getKycProfilesByStatus(KycFilter filter) {
+    Pageable pageable = createPageable(filter);
+
+    Specification<KycProfile> spec = KycSpecification.withFilters(filter);
+
+    Page<KycProfile> profiles = kycRepository.findAll(spec, pageable);
+
     return profiles.map(kycMapper::toResponseDto);
   }
 
@@ -212,6 +222,19 @@ public class KycService implements IKycService {
   private KycProfile getKycProfileEntity(UUID customerId) {
     return kycRepository.findByCustomer_Id(customerId)
         .orElseThrow(() -> new KycNotFoundException("KYC profile not found for customer"));
+  }
+
+  private Pageable createPageable(PaginationRequest filter) {
+    Sort sort = createSort(filter.getSortBy(), filter.getSortDirection());
+    return PageRequest.of(filter.getPage(), filter.getSize(), sort);
+  }
+
+  private Sort createSort(String sortBy, String sortDirection) {
+    Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection)
+        ? Sort.Direction.DESC
+        : Sort.Direction.ASC;
+
+    return Sort.by(direction, sortBy);
   }
 
 }
