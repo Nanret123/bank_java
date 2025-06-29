@@ -27,7 +27,10 @@ public class KycUpdateDto {
   @Schema(description = "Risk level of the customer", example = "LOW")
   private RiskLevel riskLevel;
 
-  @Schema(description = "Map of document type to the uploaded document file", type = "object")
-  private Map<DocumentType, MultipartFile> documents;
+  @Schema(description="Document type for verification")
+  private DocumentType documentType;
+
+ @Schema(description = "Upload of ID document")
+  private MultipartFile document;
 
 }

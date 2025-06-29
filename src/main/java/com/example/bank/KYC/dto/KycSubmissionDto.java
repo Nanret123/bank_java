@@ -22,10 +22,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "DTO for submitting KYC documents")
 public class KycSubmissionDto {
 
-  @Schema(description = "Bank Verification Number", example = "12345678901")
-  @NotNull(message="Customer BVN is required")
-  private String bvn;
-
   @Schema(description = "Risk level of the customer", example = "LOW")
   @NotNull(message="Customer risk level is required")
   private RiskLevel riskLevel;
@@ -40,7 +36,7 @@ public class KycSubmissionDto {
 
  @Schema(description = "Upload of ID document")
  @NotNull(message="document required for verification")
-  private MultipartFile identityDocument;
+  private MultipartFile document;
 
 
 }
