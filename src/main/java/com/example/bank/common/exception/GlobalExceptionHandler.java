@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import com.example.bank.common.dto.ApiResponseDto;
+import com.example.bank.KYC.exceptions.InvalidKycStatusException;
+import com.example.bank.KYC.exceptions.KycAlreadyExistsException;
+import com.example.bank.KYC.exceptions.KycNotFoundException;
 import com.example.bank.common.dto.ErrorResponse;
 import com.example.bank.customer.exception.CustomerNotFoundException;
 
@@ -43,6 +45,23 @@ public ResponseEntity<?> handleTypeMismatch(MethodArgumentTypeMismatchException 
         "status", 400
     ));
 }
+
+@ExceptionHandler(KycAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleKycAlreadyExists(KycAlreadyExistsException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), 409), HttpStatus.CONFLICT);
+    }
+
+
+    @ExceptionHandler(KycNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleKycNotFound(KycNotFoundException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), 404), HttpStatus.NOT_FOUND);
+    }
+
+    // ✅ New: Invalid KYC status
+    @ExceptionHandler(InvalidKycStatusException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidKycStatus(InvalidKycStatusException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), 400), HttpStatus.BAD_REQUEST);
+    }
 
 @ExceptionHandler(HttpMessageNotReadableException.class)
 public ResponseEntity<?> handleEnumJsonParseError(HttpMessageNotReadableException ex) {
