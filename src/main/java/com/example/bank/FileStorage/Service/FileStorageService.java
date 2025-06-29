@@ -62,27 +62,15 @@ public class FileStorageService {
     }
 
 
-  public void deleteFile(String fileUrl) {
-    try {
-      // Cloudinary deletes based on public_id, not full URL
-      String publicId = extractPublicId(fileUrl);
-      log.info("Deleting file with public ID: {}", publicId);
-      cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-    } catch (Exception e) {
-      throw new RuntimeException("Cloudinary delete failed", e);
+    public boolean deleteFile(String publicId) {
+        try {
+            Map<String, Object> result = cloudinary.uploader().destroy(publicId, Map.of());
+            return "ok".equals(result.get("result"));
+        } catch (IOException e) {
+            log.error("Error deleting file from Cloudinary: {}", e.getMessage());
+            return false;
+        }
     }
-  }
-
-
-    // public boolean deleteFile(String publicId) {
-    //     try {
-    //         Map<String, Object> result = cloudinary.uploader().destroy(publicId, Map.of());
-    //         return "ok".equals(result.get("result"));
-    //     } catch (IOException e) {
-    //         log.error("Error deleting file from Cloudinary: {}", e.getMessage());
-    //         return false;
-    //     }
-    // }
 
   public void validateFile(MultipartFile file) {
     if (file.isEmpty()) {
@@ -101,21 +89,5 @@ public class FileStorageService {
       throw new InvalidFileException("Unsupported image format ");
     }
   }
-
-  private String extractPublicId(String fileUrl) {
-    int uploadIndex = fileUrl.indexOf("/upload/");
-    // Get the part after '/upload/' (e.g., 'v1234567890/avatars/file_b66xas.jpg')
-    String afterUpload = fileUrl.substring(uploadIndex + 8);
-
-    // Remove version by finding the first slash after the version
-    int firstSlash = afterUpload.indexOf('/');
-
-    // Get the path after version (e.g., 'avatars/file_b66xas.jpg')
-    String path = afterUpload.substring(firstSlash + 1);
-
-    // Remove the extension
-    return path.substring(0, path.lastIndexOf('.'));
-}
-
 
 }
