@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.bank.KYC.dto.KycApprovalDto;
+import com.example.bank.KYC.dto.KycFilter;
 import com.example.bank.KYC.dto.KycProfileResponseDto;
 import com.example.bank.KYC.dto.KycRejectionDto;
 import com.example.bank.KYC.dto.KycSubmissionDto;
@@ -42,7 +43,7 @@ public class KycController {
 
   private final IKycService kycService;
 
-  @PostMapping
+  @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Submit KYC for a customer")
   public ResponseEntity<ApiResponseDto<KycProfileResponseDto>> submitKyc(
       @ModelAttribute KycSubmissionDto submissionDto) {
@@ -50,11 +51,11 @@ public class KycController {
     return ApiResponseUtil.success("KYC submitted successfully", response, HttpStatus.CREATED);
   }
 
-  @PutMapping("/{customerId}")
+  @PutMapping(value = "/{customerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Update KYC for a customer")
   public ResponseEntity<ApiResponseDto<KycProfileResponseDto>> updateKyc(
       @PathVariable UUID customerId,
-      @RequestBody KycUpdateDto updateDto) {
+     @ModelAttribute KycUpdateDto updateDto) {
     KycProfileResponseDto response = kycService.updateKyc(customerId, updateDto);
     return ApiResponseUtil.success("KYC updated successfully", response);
   }
@@ -94,12 +95,11 @@ public class KycController {
     return ApiResponseUtil.success("KYC documents deleted successfully", null);
   }
 
-  @GetMapping("/status")
-  @Operation(summary = "Get paginated KYC profiles by status")
+  @GetMapping()
+  @Operation(summary = "Get paginated KYC profiles and also filter by status")
   public ResponseEntity<ApiResponseDto<Page<KycProfileResponseDto>>> getKycProfilesByStatus(
-      @RequestParam KycStatus status,
-      @ParameterObject Pageable pageable) {
-    Page<KycProfileResponseDto> response = kycService.getKycProfilesByStatus(status, pageable);
+      @Valid @ModelAttribute @ParameterObject KycFilter filter) {
+    Page<KycProfileResponseDto> response = kycService.getKycProfilesByStatus(filter);
     return ApiResponseUtil.success("KYC profiles fetched successfully", response);
   }
 
