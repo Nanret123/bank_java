@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2-create-account-configuration-table
+      author: your-name
+      changes:
+        - createTable:
+            tableName: account_configuration
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: account_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: minimum_balance
+                  type: DECIMAL(15,2)
+              - column:
+                  name: maximum_balance
+                  type: DECIMAL(15,2)
+              - column:
+                  name: daily_withdrawal_limit
+                  type: DECIMAL(15,2)
+              - column:
+                  name: monthly_transaction_limit
+                  type: INT
+              - column:
+                  name: interest_rate
+                  type: DECIMAL(5,4)
+              - column:
+                  name: maintenance_fee
+                  type: DECIMAL(10,2)
+              - column:
+                  name: overdraft_allowed
+                  type: BOOLEAN
+              - column:
+                  name: overdraft_limit
+                  type: DECIMAL(15,2)
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP

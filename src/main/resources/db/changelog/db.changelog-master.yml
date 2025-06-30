@@ -19,5 +19,10 @@ databaseChangeLog:
       file: db/changelog/remove-default-value.yml
   - include:
       file: db/changelog/modify-field-lengths.yml
+  - include:
+      file: db.changelog/add-account-config-table.yml
+  - include:
+      file: db.changelog/add-account-table.yml
+
 
 
