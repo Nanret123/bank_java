@@ -3,6 +3,7 @@ package com.example.bank.customer.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.example.bank.KYC.entity.KycProfile;
+import com.example.bank.account.entity.Account;
 import com.example.bank.customer.enums.CustomerStatus;
 import com.example.bank.customer.enums.CustomerType;
 import com.example.bank.customer.enums.Gender;
@@ -25,6 +27,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Past;
@@ -168,10 +171,8 @@ public class Customer {
 
     private LocalDateTime verifiedAt;
 
-    // Relationships (if using JPA relationships)
-    // @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch =
-    // FetchType.LAZY)
-    // private List<Account> accounts;
+   @OneToMany(mappedBy = "customer")
+    private List<Account> accounts;
 
     // Helper methods
     public String getFullName() {
