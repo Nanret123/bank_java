@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
+import com.example.bank.KYC.dto.DocumentListResponseDto;
+import com.example.bank.KYC.dto.DocumentUploadRequestDto;
 import com.example.bank.KYC.dto.KycApprovalDto;
+import com.example.bank.KYC.dto.KycDocumentDto;
 import com.example.bank.KYC.dto.KycFilter;
 import com.example.bank.KYC.dto.KycProfileResponseDto;
 import com.example.bank.KYC.dto.KycRejectionDto;
@@ -31,4 +33,12 @@ public interface IKycService {
     Page<KycProfileResponseDto> getKycProfilesByStatus(KycFilter filter);
     
     long getKycCountByStatus(KycStatus status);
+
+    DocumentListResponseDto getCustomerDocuments(UUID customerId);
+
+    KycDocumentDto getCustomerDocument(UUID customerId, UUID docId);
+
+    KycDocumentDto uploadDocument(UUID customerId, DocumentUploadRequestDto request);
+
+    void deleteCustomerDocument(UUID customerId, UUID docId);
 }

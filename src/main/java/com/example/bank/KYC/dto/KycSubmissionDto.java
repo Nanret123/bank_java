@@ -1,6 +1,5 @@
 package com.example.bank.KYC.dto;
 
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -15,10 +14,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Schema(description = "DTO for submitting KYC documents")
 public class KycSubmissionDto {
 

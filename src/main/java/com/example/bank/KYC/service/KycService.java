@@ -15,7 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.bank.FileStorage.Service.FileStorageService;
 import com.example.bank.FileStorage.dto.FileUploadResponse;
+import com.example.bank.KYC.dto.DocumentListResponseDto;
+import com.example.bank.KYC.dto.DocumentUploadRequestDto;
 import com.example.bank.KYC.dto.KycApprovalDto;
+import com.example.bank.KYC.dto.KycDocumentDto;
 import com.example.bank.KYC.dto.KycFilter;
 import com.example.bank.KYC.dto.KycProfileResponseDto;
 import com.example.bank.KYC.dto.KycRejectionDto;
@@ -32,6 +35,7 @@ import com.example.bank.KYC.mapper.KycMapper;
 import com.example.bank.KYC.repository.KycDocumentRepository;
 import com.example.bank.KYC.repository.KycRepository;
 import com.example.bank.common.dto.PaginationRequest;
+import com.example.bank.common.exception.ResourceNotFoundException;
 import com.example.bank.common.util.BvnGenerator;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.repository.CustomerRepository;
@@ -218,6 +222,93 @@ public class KycService implements IKycService {
   public long getKycCountByStatus(KycStatus status) {
     return kycRepository.countByKycStatus(status);
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public DocumentListResponseDto getCustomerDocuments(UUID customerId) {
+
+    KycProfile kycProfile = getKycProfileEntity(customerId);
+    List<KycDocument> documents = documentRepository.findByKycProfileId(kycProfile.getId());
+
+    List<KycDocumentDto> documentDtos = kycMapper.toDocumentDtos(documents);
+
+    return DocumentListResponseDto.builder()
+        .documents(documentDtos)
+        .totalCount(documentDtos.size())
+        .build();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public KycDocumentDto getCustomerDocument(UUID customerId, UUID docId) {
+
+    KycProfile kycProfile = getKycProfileEntity(customerId);
+    KycDocument document = documentRepository.findByIdAndKycProfileId(docId, kycProfile.getId())
+        .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
+
+    return kycMapper.toDocumentDto(document);
+  }
+
+  @Override
+  public KycDocumentDto uploadDocument(UUID customerId, DocumentUploadRequestDto request) {
+    fileService.validateFile(request.getDocument());
+
+    KycProfile kycProfile = getKycProfileEntity(customerId);
+
+    // Check if document type already exists for this customer
+    boolean documentExists = documentRepository.existsByKycProfileIdAndDocumentType(
+        kycProfile.getId(), request.getDocumentType());
+
+    if (documentExists) {
+      throw new KycAlreadyExistsException(
+          "Document of type " + request.getDocumentType() + " already exists for this customer");
+    }
+
+    try {
+      FileUploadResponse uploadResult = fileService.uploadFile(request.getDocument(), "kyc_documents");
+
+      KycDocument document = KycDocument.builder()
+          .documentType(request.getDocumentType())
+          .fileName(uploadResult.getOriginalFileName())
+          .fileType(uploadResult.getContentType())
+          .fileSize(uploadResult.getSize())
+          .cloudinaryUrl(uploadResult.getUrl())
+          .cloudinaryPublicId(uploadResult.getPublicId())
+          .uploadedAt(uploadResult.getUploadedAt())
+          .kycProfile(kycProfile)
+          .build();
+
+      // Save the document
+      documentRepository.save(document);
+
+      return kycMapper.toDocumentDto(document);
+
+    } catch (Exception e) {
+      log.error("Failed to upload document for customer {}: {}", customerId, e.getMessage());
+      throw new RuntimeException("Failed to upload document: " + e.getMessage());
+    }
+  }
+
+  @Override
+  public void deleteCustomerDocument(UUID customerId, UUID docId) {
+        
+        KycProfile kycProfile = getKycProfileEntity(customerId);
+        KycDocument document = documentRepository.findByIdAndKycProfileId(docId, kycProfile.getId())
+                .orElseThrow(() -> new KycNotFoundException("Document not found"));
+        
+        try {
+            // Delete from cloud storage
+            fileService.deleteFile(document.getCloudinaryPublicId());
+            
+            // Delete from database
+            documentRepository.delete(document);
+            log.info("Successfully deleted document {} for customer {}", docId, customerId);
+            
+        } catch (Exception e) {
+            log.error("Failed to delete document {} for customer {}: {}", docId, customerId, e.getMessage());
+            throw new RuntimeException("Failed to delete document: " + e.getMessage());
+        }
+    }
 
   private KycProfile getKycProfileEntity(UUID customerId) {
     return kycRepository.findByCustomer_Id(customerId)

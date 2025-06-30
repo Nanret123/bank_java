@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.bank.KYC.dto.DocumentListResponseDto;
+import com.example.bank.KYC.dto.DocumentUploadRequestDto;
 import com.example.bank.KYC.dto.KycApprovalDto;
+import com.example.bank.KYC.dto.KycDocumentDto;
 import com.example.bank.KYC.dto.KycFilter;
 import com.example.bank.KYC.dto.KycProfileResponseDto;
 import com.example.bank.KYC.dto.KycRejectionDto;
@@ -43,7 +46,7 @@ public class KycController {
 
   private final IKycService kycService;
 
-  @PostMapping( consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "Submit KYC for a customer")
   public ResponseEntity<ApiResponseDto<KycProfileResponseDto>> submitKyc(
       @ModelAttribute KycSubmissionDto submissionDto) {
@@ -55,7 +58,7 @@ public class KycController {
   @Operation(summary = "Update KYC for a customer")
   public ResponseEntity<ApiResponseDto<KycProfileResponseDto>> updateKyc(
       @PathVariable UUID customerId,
-     @ModelAttribute KycUpdateDto updateDto) {
+      @ModelAttribute KycUpdateDto updateDto) {
     KycProfileResponseDto response = kycService.updateKyc(customerId, updateDto);
     return ApiResponseUtil.success("KYC updated successfully", response);
   }
@@ -108,5 +111,51 @@ public class KycController {
   public ResponseEntity<ApiResponseDto<Long>> getKycCountByStatus(@RequestParam KycStatus status) {
     long count = kycService.getKycCountByStatus(status);
     return ApiResponseUtil.success("KYC count fetched successfully", count);
+  }
+
+  @GetMapping("/{customerId}/document")
+   @Operation(
+      summary = "Get all KYC documents for a customer")
+  public ResponseEntity<ApiResponseDto<DocumentListResponseDto>> getCustomerDocuments(
+      @PathVariable UUID customerId) {
+
+    DocumentListResponseDto documents = kycService.getCustomerDocuments(customerId);
+    return ResponseEntity.ok(ApiResponseDto.success("Documents retrieved successfully", documents));
+  }
+
+  @GetMapping("/{customerId}/document/{docId}")
+   @Operation(
+      summary = "Get a specific KYC document for a customer" )
+  public ResponseEntity<ApiResponseDto<KycDocumentDto>> getCustomerDocument(
+      @PathVariable UUID customerId,
+      @PathVariable UUID docId) {
+
+    KycDocumentDto document = kycService.getCustomerDocument(customerId, docId);
+    return ResponseEntity.ok(ApiResponseDto.success( "Document retrieved successfully", document));
+  }
+
+  @PostMapping(value="/{customerId}/document", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+   @Operation(
+      summary = "Upload a document for a customer")
+  public ResponseEntity<ApiResponseDto<KycDocumentDto>> uploadDocument(
+      @PathVariable UUID customerId,
+       @ModelAttribute @Valid DocumentUploadRequestDto request) {
+
+
+    KycDocumentDto document = kycService.uploadDocument(customerId, request);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(ApiResponseDto.success("Document uploaded successfully", document));
+  }
+
+  @DeleteMapping("/{customerId}/document/{docId}")
+  @Operation(
+      summary = "Delete a customer's document")
+  public ResponseEntity<ApiResponseDto<Void>> deleteCustomerDocument(
+      @PathVariable UUID customerId,
+      @PathVariable UUID docId) {
+
+
+    kycService.deleteCustomerDocument(customerId, docId);
+    return ResponseEntity.ok(ApiResponseDto.success("Document deleted successfully", null));
   }
 }
