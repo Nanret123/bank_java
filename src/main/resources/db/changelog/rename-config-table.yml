@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: rename-account-config-table
+      author: bank
+      changes:
+        - renameTable:
+            oldTableName: account_configuration
+            newTableName: account_configurations
+
+  - changeSet:
+      id: set-default-uuid-for-account-configurations-id
+      author: bank
+      changes:
+        - addDefaultValue:
+            tableName: account_configurations
+            columnName: id
+            defaultValueComputed: "gen_random_uuid()"
+
+  - changeSet:
+      id: rename-account-table
+      author: bank
+      changes:
+        - renameTable:
+            oldTableName: account
+            newTableName: accounts
