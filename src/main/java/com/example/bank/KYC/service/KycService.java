@@ -59,13 +59,7 @@ public class KycService implements IKycService {
   private final KycMapper kycMapper;
 
   @Override
-  @Auditable(
-    operation = OperationType.CREATE,
-    module = "kyc",
-    entityType = "KYC",
-    captureArgs = true,
-    captureResult = true
-)
+  @Auditable(operation = OperationType.CREATE, module = "kyc", entityType = "KYC", captureArgs = true, captureResult = true)
   public KycProfileResponseDto submitKyc(KycSubmissionDto submissionDto) {
     if (kycRepository.existsByCustomerId(submissionDto.getCustomerId())) {
       throw new KycAlreadyExistsException("KYC profile already exists for customer");
@@ -105,13 +99,7 @@ public class KycService implements IKycService {
   }
 
   @Override
-  @Auditable(
-    operation = OperationType.UPDATE,
-    module = "kyc",
-    entityType = "KYC",
-    captureArgs = true,
-    captureResult = true
-)
+  @Auditable(operation = OperationType.UPDATE, module = "kyc", entityType = "KYC", captureArgs = true, captureResult = true)
   public KycProfileResponseDto updateKyc(UUID customerId, KycUpdateDto updateDto) {
 
     KycProfile kycProfile = getKycProfileEntity(customerId);
@@ -163,13 +151,7 @@ public class KycService implements IKycService {
   }
 
   @Override
-  @Auditable(
-    operation = OperationType.UPDATE,
-    module = "kyc",
-    entityType = "KYC",
-    captureArgs = true,
-    captureResult = true
-)
+  @Auditable(operation = OperationType.UPDATE, module = "kyc", entityType = "KYC", captureArgs = true, captureResult = true)
   public KycProfileResponseDto approveKyc(UUID customerId, KycApprovalDto approvalDto) {
 
     KycProfile kycProfile = getKycProfileEntity(customerId);
@@ -190,13 +172,7 @@ public class KycService implements IKycService {
   }
 
   @Override
-  @Auditable(
-    operation = OperationType.UPDATE,
-    module = "kyc",
-    entityType = "KYC",
-    captureArgs = true,
-    captureResult = true
-)
+  @Auditable(operation = OperationType.UPDATE, module = "kyc", entityType = "KYC", captureArgs = true, captureResult = true)
   public KycProfileResponseDto rejectKyc(UUID customerId, KycRejectionDto rejectionDto) {
 
     KycProfile kycProfile = getKycProfileEntity(customerId);
@@ -217,13 +193,7 @@ public class KycService implements IKycService {
   }
 
   @Override
-  @Auditable(
-    operation = OperationType.DELETE,
-    module = "kyc",
-    entityType = "KYC_DOCUMENT",
-    captureArgs = true,
-    captureResult = false
-)
+  @Auditable(operation = OperationType.DELETE, module = "kyc", entityType = "KYC_DOCUMENT", captureArgs = true, captureResult = false)
   public void deleteKycFiles(UUID customerId, List<UUID> documentIds) {
 
     List<KycDocument> documentsToDelete = documentRepository.findAllById(documentIds);
@@ -329,24 +299,24 @@ public class KycService implements IKycService {
 
   @Override
   public void deleteCustomerDocument(UUID customerId, UUID docId) {
-        
-        KycProfile kycProfile = getKycProfileEntity(customerId);
-        KycDocument document = documentRepository.findByIdAndKycProfileId(docId, kycProfile.getId())
-                .orElseThrow(() -> new KycNotFoundException("Document not found"));
-        
-        try {
-            // Delete from cloud storage
-            fileService.deleteFile(document.getCloudinaryPublicId());
-            
-            // Delete from database
-            documentRepository.delete(document);
-            log.info("Successfully deleted document {} for customer {}", docId, customerId);
-            
-        } catch (Exception e) {
-            log.error("Failed to delete document {} for customer {}: {}", docId, customerId, e.getMessage());
-            throw new RuntimeException("Failed to delete document: " + e.getMessage());
-        }
+
+    KycProfile kycProfile = getKycProfileEntity(customerId);
+    KycDocument document = documentRepository.findByIdAndKycProfileId(docId, kycProfile.getId())
+        .orElseThrow(() -> new KycNotFoundException("Document not found"));
+
+    try {
+      // Delete from cloud storage
+      fileService.deleteFile(document.getCloudinaryPublicId());
+
+      // Delete from database
+      documentRepository.delete(document);
+      log.info("Successfully deleted document {} for customer {}", docId, customerId);
+
+    } catch (Exception e) {
+      log.error("Failed to delete document {} for customer {}: {}", docId, customerId, e.getMessage());
+      throw new RuntimeException("Failed to delete document: " + e.getMessage());
     }
+  }
 
   private KycProfile getKycProfileEntity(UUID customerId) {
     return kycRepository.findByCustomer_Id(customerId)
