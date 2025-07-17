@@ -75,3 +75,16 @@ springdoc:
   packages-to-scan: com.example.bank
   swagger-ui:
     persist-authorization: true
+
+banking:
+  transaction:
+    withdrawal:
+      fee: 10.00
+    approval-threshold: 100000.00
+    transfer:
+      fee: 25.00
+    vat:
+      rate: 0.075
+  bank:
+    control:
+      account: "BANK_CONTROL_000001"  # Placeholder for the bank control account, replace with actual account name

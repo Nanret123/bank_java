@@ -1,0 +1,110 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-transaction-table
+      author: bank
+      changes:
+        - createTable:
+            tableName: transactions
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: "gen_random_uuid()"
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: transaction_type
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: from_account_number
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: to_account_number
+                  type: VARCHAR(100)
+
+              - column:
+                  name: amount
+                  type: DECIMAL(19, 2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: transaction_reference
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: narration
+                  type: VARCHAR(500)
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: transaction_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: value_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: initiated_by
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: approved_by
+                  type: UUID
+
+              - column:
+                  name: reversal_reference
+                  type: VARCHAR(255)
+
+              - column:
+                  name: reversed
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+              - column:
+                  name: version
+                  type: INTEGER
+
+              - column:
+                  name: transaction_fee
+                  type: DECIMAL(19, 2)
+
+              - column:
+                  name: vat_amount
+                  type: DECIMAL(19, 2)
