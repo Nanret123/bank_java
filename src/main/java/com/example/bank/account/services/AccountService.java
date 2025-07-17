@@ -30,6 +30,8 @@ import com.example.bank.account.interfaces.IAccount;
 import com.example.bank.account.mapper.AccountMapper;
 import com.example.bank.account.repository.AccountConfigurationRepository;
 import com.example.bank.account.repository.AccountRepository;
+import com.example.bank.audit.annotations.Auditable;
+import com.example.bank.audit.enums.OperationType;
 import com.example.bank.common.exception.ResourceNotFoundException;
 import com.example.bank.common.util.BuildPageable;
 import com.example.bank.customer.entity.Customer;
@@ -52,6 +54,7 @@ public class AccountService implements IAccount {
   private final AccountMapper accountMapper;
 
   @Override
+  @Auditable(operation = OperationType.CREATE, module = "account", entityType = "ACCOUNT", captureArgs = true, captureResult = true)
   public AccountResponse createAccount(CreateAccountRequest request, UUID userId) {
     // check if customer exists
     Customer customer = customerRepository.findById(request.getCustomerId())
@@ -114,6 +117,7 @@ public class AccountService implements IAccount {
   }
 
   @Override
+  @Auditable(operation = OperationType.UPDATE, module = "account", entityType = "ACCOUNT", captureArgs = true, captureResult = true)
   public AccountResponse updateAccount(UUID accountId, UpdateAccountRequest request, UUID userId) {
 
     Account account = getAccountEntityById(accountId);
@@ -131,6 +135,7 @@ public class AccountService implements IAccount {
   }
 
   @Override
+  @Auditable(operation = OperationType.DELETE, module = "account", entityType = "ACCOUNT", captureArgs = true, captureResult = false)
   public void deleteAccount(UUID id, UUID deletedBy) {
 
     Account account = getAccountEntityById(id);
