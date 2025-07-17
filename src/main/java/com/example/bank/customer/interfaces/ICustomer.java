@@ -14,7 +14,6 @@ import com.example.bank.customer.dtos.CustomerStatusUpdateRequest;
 import com.example.bank.customer.dtos.CustomerSummaryResponse;
 import com.example.bank.customer.dtos.CustomerVerificationRequest;
 import com.example.bank.customer.dtos.UpdateCustomerRequest;
-import com.example.bank.customer.validation.dtos.CustomerValidationRequest;
 
 public interface ICustomer {
     // Core CRUD operations

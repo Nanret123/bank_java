@@ -5,15 +5,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.bank.KYC.enums.KycStatus;
-import com.example.bank.common.dto.PaginationRequest;
+import com.example.bank.audit.annotations.Auditable;
+import com.example.bank.audit.enums.OperationType;
 import com.example.bank.common.util.BuildPageable;
 import com.example.bank.customer.dtos.CreateCustomerRequest;
 import com.example.bank.customer.dtos.CustomerFilter;
@@ -46,9 +45,10 @@ public class CustomerService implements ICustomer {
   private final ValidationService validationService;
 
   @Override
+  @Auditable(operation = OperationType.CREATE, module = "customer", entityType = "CUSTOMER", captureArgs = true, captureResult = true)
   public CustomerResponse createCustomer(CreateCustomerRequest request, UUID userId) {
     // Validate request
-     validationService.validateCustomer(
+    validationService.validateCustomer(
         CustomerValidationRequest.builder()
             .email(request.getEmail())
             .phoneNumber(request.getPhoneNumber())
@@ -77,6 +77,7 @@ public class CustomerService implements ICustomer {
   }
 
   @Override
+  @Auditable(operation = OperationType.UPDATE, module = "customer", entityType = "CUSTOMER", captureArgs = true, captureResult = true)
   public CustomerResponse updateCustomer(UUID customerId, UpdateCustomerRequest request, UUID userId) {
 
     Customer customer = getCustomerEntityById(customerId);
@@ -103,6 +104,7 @@ public class CustomerService implements ICustomer {
   }
 
   @Override
+  @Auditable(operation = OperationType.DELETE, module = "customer", entityType = "CUSTOMER", captureArgs = true, captureResult = false)
   public void deleteCustomer(UUID customerId, UUID userId) {
 
     Customer customer = getCustomerEntityById(customerId);
@@ -120,9 +122,10 @@ public class CustomerService implements ICustomer {
   }
 
   @Override
+  @Auditable(operation = OperationType.UPDATE, module = "customer", entityType = "CUSTOMER", captureArgs = true, captureResult = false)
   public void restoreCustomer(UUID customerId, UUID userId) {
 
-    Customer customer =  customerRepository.findById(customerId)
+    Customer customer = customerRepository.findById(customerId)
         .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
 
     // Soft delete
@@ -180,7 +183,7 @@ public class CustomerService implements ICustomer {
     Specification<Customer> specification = CustomerSpecification.buildFilterSpecification(filter);
 
     // Create pageable
-   Pageable pageable = BuildPageable.createPageable(filter);
+    Pageable pageable = BuildPageable.createPageable(filter);
 
     // Execute query with filters
     Page<Customer> customers = customerRepository.findAll(specification, pageable);
@@ -206,6 +209,7 @@ public class CustomerService implements ICustomer {
   }
 
   @Override
+  @Auditable(operation = OperationType.UPDATE, module = "customer", entityType = "CUSTOMER", captureArgs = true, captureResult = true)
   public void verifyCustomer(CustomerVerificationRequest request, UUID userId) {
     Customer customer = getCustomerEntityById(request.getCustomerId());
 
@@ -217,6 +221,7 @@ public class CustomerService implements ICustomer {
   }
 
   @Override
+  @Auditable(operation = OperationType.UPDATE, module = "customer", entityType = "CUSTOMER", captureArgs = true, captureResult = true)
   public CustomerResponse updateCustomerStatus(UUID customerId, CustomerStatusUpdateRequest request, UUID userId) {
     Customer customer = getCustomerEntityById(customerId);
     CustomerStatus oldStatus = customer.getStatus();
