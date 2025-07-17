@@ -34,6 +34,8 @@ import com.example.bank.KYC.interfaces.IKycService;
 import com.example.bank.KYC.mapper.KycMapper;
 import com.example.bank.KYC.repository.KycDocumentRepository;
 import com.example.bank.KYC.repository.KycRepository;
+import com.example.bank.audit.annotations.Auditable;
+import com.example.bank.audit.enums.OperationType;
 import com.example.bank.common.dto.PaginationRequest;
 import com.example.bank.common.exception.ResourceNotFoundException;
 import com.example.bank.common.util.BuildPageable;
@@ -57,6 +59,13 @@ public class KycService implements IKycService {
   private final KycMapper kycMapper;
 
   @Override
+  @Auditable(
+    operation = OperationType.CREATE,
+    module = "kyc",
+    entityType = "KYC",
+    captureArgs = true,
+    captureResult = true
+)
   public KycProfileResponseDto submitKyc(KycSubmissionDto submissionDto) {
     if (kycRepository.existsByCustomerId(submissionDto.getCustomerId())) {
       throw new KycAlreadyExistsException("KYC profile already exists for customer");
@@ -96,6 +105,13 @@ public class KycService implements IKycService {
   }
 
   @Override
+  @Auditable(
+    operation = OperationType.UPDATE,
+    module = "kyc",
+    entityType = "KYC",
+    captureArgs = true,
+    captureResult = true
+)
   public KycProfileResponseDto updateKyc(UUID customerId, KycUpdateDto updateDto) {
 
     KycProfile kycProfile = getKycProfileEntity(customerId);
@@ -147,6 +163,13 @@ public class KycService implements IKycService {
   }
 
   @Override
+  @Auditable(
+    operation = OperationType.UPDATE,
+    module = "kyc",
+    entityType = "KYC",
+    captureArgs = true,
+    captureResult = true
+)
   public KycProfileResponseDto approveKyc(UUID customerId, KycApprovalDto approvalDto) {
 
     KycProfile kycProfile = getKycProfileEntity(customerId);
@@ -167,6 +190,13 @@ public class KycService implements IKycService {
   }
 
   @Override
+  @Auditable(
+    operation = OperationType.UPDATE,
+    module = "kyc",
+    entityType = "KYC",
+    captureArgs = true,
+    captureResult = true
+)
   public KycProfileResponseDto rejectKyc(UUID customerId, KycRejectionDto rejectionDto) {
 
     KycProfile kycProfile = getKycProfileEntity(customerId);
@@ -187,6 +217,13 @@ public class KycService implements IKycService {
   }
 
   @Override
+  @Auditable(
+    operation = OperationType.DELETE,
+    module = "kyc",
+    entityType = "KYC_DOCUMENT",
+    captureArgs = true,
+    captureResult = false
+)
   public void deleteKycFiles(UUID customerId, List<UUID> documentIds) {
 
     List<KycDocument> documentsToDelete = documentRepository.findAllById(documentIds);
