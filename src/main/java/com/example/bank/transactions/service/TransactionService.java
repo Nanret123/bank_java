@@ -23,6 +23,8 @@ import com.example.bank.account.entity.AccountConfiguration;
 import com.example.bank.account.repository.AccountConfigurationRepository;
 import com.example.bank.account.repository.AccountRepository;
 import com.example.bank.account.services.AccountService;
+import com.example.bank.audit.annotations.Auditable;
+import com.example.bank.audit.enums.OperationType;
 import com.example.bank.common.exception.ResourceNotFoundException;
 import com.example.bank.common.util.BuildPageable;
 import com.example.bank.ledger.dtos.DoubleEntryRequest;
@@ -73,6 +75,13 @@ public class TransactionService implements ITransactionService {
   private final LedgerService ledgerService;
 
   @Override
+  @Auditable(
+    operation = OperationType.TRANSACTION,
+    module = "transaction",
+    entityType = "Deposit",
+    captureArgs = true,
+    captureResult = true
+)
   public TransactionResponse processDeposit(DepositRequest request, UUID initiatedBy) {
 
     // Validate request
@@ -99,6 +108,13 @@ public class TransactionService implements ITransactionService {
   }
 
   @Override
+  @Auditable(
+    operation = OperationType.TRANSACTION,
+    module = "transaction",
+    entityType = "Withdrawal",
+    captureArgs = true,
+    captureResult = true
+)
   public TransactionResponse processWithdrawal(WithdrawalRequest request, UUID initiatedBy) {
 
     // Validate request
@@ -125,6 +141,13 @@ public class TransactionService implements ITransactionService {
   }
 
   @Override
+  @Auditable(
+    operation = OperationType.TRANSACTION,
+    module = "transaction",
+    entityType = "Transfer",
+    captureArgs = true,
+    captureResult = true
+)
   public TransactionResponse processTransfer(TransferRequest request, UUID initiatedBy) {
     validateTransferRequest(request);
 
@@ -174,6 +197,13 @@ public class TransactionService implements ITransactionService {
   }
 
   @Override
+  @Auditable(
+    operation = OperationType.APPROVE_TRANSACTION,
+    module = "transaction",
+    entityType = "Transaction",
+    captureArgs = true,
+    captureResult = true
+)
   public TransactionResponse approveTransaction(UUID transactionId, UUID approvedBy) {
     Transaction transaction = transactionRepository.findById(transactionId)
         .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
@@ -227,6 +257,13 @@ public class TransactionService implements ITransactionService {
   }
 
   @Override
+  @Auditable(
+    operation = OperationType.REVERSE_TRANSACTION,
+    module = "transaction",
+    entityType = "Transaction",
+    captureArgs = true,
+    captureResult = true
+)
   public TransactionResponse reverseTransaction(UUID transactionId, UUID reversedBy) {
     Transaction original = transactionRepository.findById(transactionId)
         .orElseThrow(() -> new ResourceNotFoundException("Transaction not found"));
