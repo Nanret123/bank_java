@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.bank.FileStorage.Service.FileStorageService;
 import com.example.bank.FileStorage.dto.FileUploadResponse;
+import com.example.bank.audit.annotations.Auditable;
+import com.example.bank.audit.enums.OperationType;
 import com.example.bank.common.exception.ResourceNotFoundException;
 import com.example.bank.common.exception.ValidationException;
 import com.example.bank.security.entity.User;
@@ -42,6 +44,13 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
   private final FileStorageService fileStorageService;
 
+  @Auditable(
+    operation = OperationType.CREATE,
+    module = "user",
+    entityType = "User",
+    captureArgs = true,
+    captureResult = true
+)
   public UserCreationResponse createUser(CreateUserRequest request) {
     // validate unique username and email
     if (userRepo.existsByUsername(request.getUsername())) {
@@ -81,6 +90,13 @@ public class UserService {
 
   }
 
+  @Auditable(
+    operation = OperationType.UPDATE,
+    module = "user",
+    entityType = "User",
+    captureArgs = true,
+    captureResult = true
+)
   public UserResponse updateUser(UUID userId, UpdateUserRequest request) {
     User user = findUserEntity(userId);
 
@@ -134,12 +150,26 @@ public class UserService {
     return mapToUserResponse(user);
   }
 
+  @Auditable(
+    operation = OperationType.UPDATE,
+    module = "user",
+    entityType = "User",
+    captureArgs = true,
+    captureResult = false
+)
   public void deactivateUser(UUID userId) {
     User user = findUserEntity(userId);
     user.setActive(false);
     userRepo.save(user);
   }
 
+  @Auditable(
+    operation = OperationType.UPDATE,
+    module = "user",
+    entityType = "User",
+    captureArgs = true,
+    captureResult = false
+)
   public void activateUser(UUID userId) {
     userRepo.updateUserStatus(userId, true);
   }
@@ -167,6 +197,13 @@ public class UserService {
         .build();
   }
 
+  @Auditable(
+    operation = OperationType.UPDATE,
+    module = "user",
+    entityType = "User",
+    captureArgs = true,
+    captureResult = true
+)
   public UserProfile updateProfile(UUID userId, UpdateProfileRequest profile) {
     User user = findUserEntity(userId);
 
