@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.bank.audit.annotations.Auditable;
+import com.example.bank.audit.enums.OperationType;
 import com.example.bank.security.DTO.LoginRequest;
 import com.example.bank.security.DTO.LoginResponse;
 import com.example.bank.security.DTO.TokenResponse;
@@ -42,6 +44,7 @@ public class AuthService {
   @Value("${app.jwt.access-token-expiration}")
   private Long accessTokenExpiration;
 
+  @Auditable(operation = OperationType.LOGIN, module = "auth", entityType = "User", captureArgs = true, captureResult = true)
   public LoginResponse login(LoginRequest request, String ipAddress) {
     User user = userRepo.findByUsername(request.getUsername())
         .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
@@ -94,12 +97,13 @@ public class AuthService {
         .build();
   }
 
-   public String forcePasswordReset(UUID userId, ForcePasswordResetRequest request) {
+  @Auditable(operation = OperationType.UPDATE, module = "auth", entityType = "User", captureArgs = true, captureResult = false)
+  public String forcePasswordReset(UUID userId, ForcePasswordResetRequest request) {
     User user = userRepo.findById(userId)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-        throw new BadCredentialsException("Old password is incorrect");
+      throw new BadCredentialsException("Old password is incorrect");
     }
     user.setPassword(passwordEncoder.encode(request.getNewPassword()));
     user.setPasswordChanged(true); // Mark password as changed
@@ -108,7 +112,7 @@ public class AuthService {
     return "Password reset successfully";
   }
 
-
+  @Auditable(operation = OperationType.LOGIN, module = "auth", entityType = "User", captureArgs = false, captureResult = true)
   public TokenResponse refreshAccessToken(String refreshTokenString) {
 
     RefreshToken refreshToken = refreshTokenRepo.findByTokenAndIsActive(refreshTokenString, true)
@@ -126,28 +130,29 @@ public class AuthService {
         .build();
   }
 
+  @Auditable(operation = OperationType.LOGOUT, module = "auth", entityType = "User", captureArgs = true, captureResult = false)
   public void logout(String refreshTokenString) {
 
- refreshTokenRepo.findByTokenAndIsActive(refreshTokenString, true)
-       .ifPresent(token -> {
-        token.setActive(false);
-        refreshTokenRepo.save(token);
-       });
+    refreshTokenRepo.findByTokenAndIsActive(refreshTokenString, true)
+        .ifPresent(token -> {
+          token.setActive(false);
+          refreshTokenRepo.save(token);
+        });
   }
 
+  @Auditable(operation = OperationType.LOGOUT, module = "auth", entityType = "User", captureArgs = true, captureResult = false)
   public void logoutAllDevices(String username) {
     User user = userRepo.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     List<RefreshToken> activeTokens = refreshTokenRepo.findByUserAndIsActive(user, true);
-        activeTokens.forEach(token ->  token.setActive(false)
-        );
+    activeTokens.forEach(token -> token.setActive(false));
     refreshTokenRepo.saveAll(activeTokens);
   }
 
-@Scheduled(fixedRate = 3600000) // Run every hour
-    public void cleanupExpiredTokens() {
-        refreshTokenRepo.deactivateExpiredTokens(LocalDateTime.now());
-        log.info("Cleaned up expired refresh tokens");
-    }
+  @Scheduled(fixedRate = 3600000) // Run every hour
+  public void cleanupExpiredTokens() {
+    refreshTokenRepo.deactivateExpiredTokens(LocalDateTime.now());
+    log.info("Cleaned up expired refresh tokens");
+  }
 }

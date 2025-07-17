@@ -17,5 +17,4 @@ public @interface Auditable {
     String entityType() default "";
     boolean captureArgs() default true;
     boolean captureResult() default true;
-    String[] sensitiveFields() default {};
 }
