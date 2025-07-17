@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.example.bank.account.dtos.AccountResponse;
 import com.example.bank.account.dtos.AccountSummaryResponse;
+import com.example.bank.account.dtos.BalanceResponse;
 import com.example.bank.account.dtos.CreateAccountRequest;
 import com.example.bank.account.dtos.UpdateAccountRequest;
 
@@ -22,4 +23,6 @@ public interface IAccount {
     List<AccountSummaryResponse> getAccountsByCustomerId(UUID customerId);
 
     boolean isAccountNumberUnique(String accountNumber);
+
+    BalanceResponse getAccountBalance(String accountNumber);
 }

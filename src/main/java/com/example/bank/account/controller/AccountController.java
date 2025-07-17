@@ -101,10 +101,10 @@ public class AccountController {
     return ApiResponseUtil.success("Accounts retrieved successfully", accounts);
   }
 
-  @GetMapping("/{id}/balance")
+  @GetMapping("/{accountNumber}/balance")
   @Operation(summary = "Get account balance")
-  public ResponseEntity<ApiResponseDto<BalanceResponse>> getAccountBalance(@PathVariable UUID id) {
-    BalanceResponse response = accountService.getAccountBalance(id);
+  public ResponseEntity<ApiResponseDto<BalanceResponse>> getAccountBalance(@PathVariable String accountNumber) {
+    BalanceResponse response = accountService.getAccountBalance(accountNumber);
     return ApiResponseUtil.success("Account balance retrieved successfully", response);
   }
 

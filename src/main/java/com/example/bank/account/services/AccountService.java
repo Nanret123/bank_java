@@ -10,9 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +30,8 @@ import com.example.bank.account.interfaces.IAccount;
 import com.example.bank.account.mapper.AccountMapper;
 import com.example.bank.account.repository.AccountConfigurationRepository;
 import com.example.bank.account.repository.AccountRepository;
-import com.example.bank.common.dto.PaginationRequest;
 import com.example.bank.common.exception.ResourceNotFoundException;
+import com.example.bank.common.util.BuildPageable;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.repository.CustomerRepository;
 
@@ -55,18 +53,16 @@ public class AccountService implements IAccount {
 
   @Override
   public AccountResponse createAccount(CreateAccountRequest request, UUID userId) {
-    //check if customer exists
+    // check if customer exists
     Customer customer = customerRepository.findById(request.getCustomerId())
-    .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+        .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
-     boolean exists = accountRepository.existsByCustomerIdAndAccountType(
-        request.getCustomerId(), request.getAccountType()
-    );
+    boolean exists = accountRepository.existsByCustomerIdAndAccountType(
+        request.getCustomerId(), request.getAccountType());
 
     if (exists) {
-        throw new RuntimeException("Customer already has an account of type: " + request.getAccountType());
+      throw new RuntimeException("Customer already has an account of type: " + request.getAccountType());
     }
-
 
     // Get account configuration
     AccountConfiguration config = getAccountConfiguration(request.getAccountType());
@@ -92,7 +88,6 @@ public class AccountService implements IAccount {
         .updatedBy(userId)
         .remarks(request.getRemarks())
         .build();
-
 
     Account savedAccount = accountRepository.save(account);
 
@@ -217,10 +212,11 @@ public class AccountService implements IAccount {
   private void validateStatusTransition(AccountStatus currentStatus, AccountStatus newStatus) {
     // Define valid status transitions
     Map<AccountStatus, Set<AccountStatus>> validTransitions = Map.of(
-        AccountStatus.ACTIVE, Set.of(AccountStatus.INACTIVE, AccountStatus.CLOSED, AccountStatus.FROZEN, AccountStatus.SUSPENDED),
+        AccountStatus.ACTIVE,
+        Set.of(AccountStatus.INACTIVE, AccountStatus.CLOSED, AccountStatus.FROZEN, AccountStatus.SUSPENDED),
         AccountStatus.INACTIVE, Set.of(AccountStatus.ACTIVE, AccountStatus.CLOSED),
         AccountStatus.FROZEN, Set.of(AccountStatus.ACTIVE, AccountStatus.CLOSED),
-         AccountStatus.SUSPENDED, Set.of(AccountStatus.ACTIVE),
+        AccountStatus.SUSPENDED, Set.of(AccountStatus.ACTIVE),
         AccountStatus.CLOSED, Set.of() // No transitions from CLOSED
     );
 
@@ -235,7 +231,7 @@ public class AccountService implements IAccount {
         .and(AccountSpecification.hasStatus(filter.getStatus()))
         .and(AccountSpecification.hasAccountType(filter.getAccountType()));
 
-    Pageable pageable = createPageable(filter);
+    Pageable pageable = BuildPageable.createPageable(filter);
 
     Page<Account> accounts = accountRepository.findAll(spec, pageable);
 
@@ -265,10 +261,14 @@ public class AccountService implements IAccount {
     return accountMapper.toResponse(savedAccount);
   }
 
+  @Override
   @Transactional(readOnly = true)
-  public BalanceResponse getAccountBalance(UUID id) {
-    Account account = getAccountEntityById(id);
-
+  public BalanceResponse getAccountBalance(String accountNumber) {
+    Account account = accountRepository.findByAccountNumber(accountNumber)
+        .orElseThrow(() -> new EntityNotFoundException("Account not found: " + accountNumber));
+    if (account.getStatus() == AccountStatus.CLOSED) {
+      throw new IllegalStateException("Cannot retrieve balance for a closed account");
+    }
     return BalanceResponse.builder()
         .balance(account.getBalance())
         .availableBalance(account.getAvailableBalance())
@@ -329,17 +329,41 @@ public class AccountService implements IAccount {
         .build();
   }
 
-  private Pageable createPageable(PaginationRequest filter) {
-    Sort sort = createSort(filter.getSortBy(), filter.getSortDirection());
-    return PageRequest.of(filter.getPage(), filter.getSize(), sort);
+  @Transactional
+  public void creditAccount(String accountNumber, BigDecimal amount) {
+    // 1. Fetch the account
+    Account account = accountRepository.findByAccountNumber(accountNumber)
+        .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + accountNumber));
+
+    // 2. Validate if account can be credited
+    if (!account.canCredit()) {
+      throw new IllegalStateException("Account cannot be credited: " + accountNumber);
+    }
+
+    // 3. Update balance and available balance
+    account.setBalance(account.getBalance().add(amount));
+    account.setAvailableBalance(account.getAvailableBalance().add(amount));
+
+    // 4. Save the updated account
+    accountRepository.save(account);
+
+    // 5. (Optional) Log the credit transaction — useful for audit purposes
+    // log.info("Credited {} {} to account {} via transactionRef {}", amount,
+    // account.getCurrency(), accountNumber, transactionReference);
   }
 
-  private Sort createSort(String sortBy, String sortDirection) {
-    Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection)
-        ? Sort.Direction.DESC
-        : Sort.Direction.ASC;
+  @Transactional
+  public void debitAccount(String accountNumber, BigDecimal amount) {
+    // 1. Fetch the account
+    Account account = accountRepository.findByAccountNumber(accountNumber)
+        .orElseThrow(() -> new ResourceNotFoundException("Account not found: " + accountNumber));
 
-    return Sort.by(direction, sortBy);
+    // 4. Perform the debit
+    account.setBalance(account.getBalance().subtract(amount));
+    account.setAvailableBalance(account.getAvailableBalance().subtract(amount));
+
+    // 5. Save the updated account
+    accountRepository.save(account);
   }
 
 }

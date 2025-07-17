@@ -36,6 +36,7 @@ import com.example.bank.KYC.repository.KycDocumentRepository;
 import com.example.bank.KYC.repository.KycRepository;
 import com.example.bank.common.dto.PaginationRequest;
 import com.example.bank.common.exception.ResourceNotFoundException;
+import com.example.bank.common.util.BuildPageable;
 import com.example.bank.common.util.BvnGenerator;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.repository.CustomerRepository;
@@ -208,7 +209,7 @@ public class KycService implements IKycService {
   @Override
   @Transactional(readOnly = true)
   public Page<KycProfileResponseDto> getKycProfilesByStatus(KycFilter filter) {
-    Pageable pageable = createPageable(filter);
+    Pageable pageable = BuildPageable.createPageable(filter);
 
     Specification<KycProfile> spec = KycSpecification.withFilters(filter);
 
@@ -313,19 +314,6 @@ public class KycService implements IKycService {
   private KycProfile getKycProfileEntity(UUID customerId) {
     return kycRepository.findByCustomer_Id(customerId)
         .orElseThrow(() -> new KycNotFoundException("KYC profile not found for customer"));
-  }
-
-  private Pageable createPageable(PaginationRequest filter) {
-    Sort sort = createSort(filter.getSortBy(), filter.getSortDirection());
-    return PageRequest.of(filter.getPage(), filter.getSize(), sort);
-  }
-
-  private Sort createSort(String sortBy, String sortDirection) {
-    Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection)
-        ? Sort.Direction.DESC
-        : Sort.Direction.ASC;
-
-    return Sort.by(direction, sortBy);
   }
 
 }

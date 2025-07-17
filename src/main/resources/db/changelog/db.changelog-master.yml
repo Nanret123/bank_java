@@ -27,6 +27,11 @@ databaseChangeLog:
       file: db/changelog/rename-config-table.yml
   - include:
       file: db/changelog/add-foreign-key.yml
+  - include:
+      file: db/changelog/add-transaction-table.yml
+  - include:
+        file: db/changelog/add-ledger-entry-table.yml
+
 
 
 

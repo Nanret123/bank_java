@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.bank.KYC.enums.KycStatus;
 import com.example.bank.common.dto.PaginationRequest;
+import com.example.bank.common.util.BuildPageable;
 import com.example.bank.customer.dtos.CreateCustomerRequest;
 import com.example.bank.customer.dtos.CustomerFilter;
 import com.example.bank.customer.dtos.CustomerResponse;
@@ -26,15 +27,12 @@ import com.example.bank.customer.dtos.UpdateCustomerRequest;
 import com.example.bank.customer.entity.Customer;
 import com.example.bank.customer.enums.CustomerStatus;
 import com.example.bank.customer.exception.CustomerNotFoundException;
-import com.example.bank.customer.exception.DuplicateCustomerException;
 import com.example.bank.customer.interfaces.ICustomer;
 import com.example.bank.customer.mappers.CustomerMapper;
 import com.example.bank.customer.repository.CustomerRepository;
 import com.example.bank.customer.validation.ValidationService;
 import com.example.bank.customer.validation.dtos.CustomerValidationRequest;
-import com.example.bank.customer.validation.dtos.ValidationResponse;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -148,7 +146,7 @@ public class CustomerService implements ICustomer {
     Specification<Customer> specification = CustomerSpecification.buildFilterSpecification(filter);
 
     // Create pageable
-    Pageable pageable = createPageable(filter);
+    Pageable pageable = BuildPageable.createPageable(filter);
 
     // Execute query with filters
     Page<Customer> customers = customerRepository.findAllByIsDeletedFalse(specification, pageable);
@@ -165,7 +163,7 @@ public class CustomerService implements ICustomer {
         .buildTextSearchSpecification(searchRequest.getSearchText());
 
     // Create pageable
-    Pageable pageable = createPageable(searchRequest);
+    Pageable pageable = BuildPageable.createPageable(searchRequest);
 
     // Execute text search
     Page<Customer> customers = customerRepository.findAllByIsDeletedFalse(specification, pageable);
@@ -182,7 +180,7 @@ public class CustomerService implements ICustomer {
     Specification<Customer> specification = CustomerSpecification.buildFilterSpecification(filter);
 
     // Create pageable
-    Pageable pageable = createPageable(filter);
+   Pageable pageable = BuildPageable.createPageable(filter);
 
     // Execute query with filters
     Page<Customer> customers = customerRepository.findAll(specification, pageable);
@@ -199,7 +197,7 @@ public class CustomerService implements ICustomer {
         .buildTextSearchSpecification(searchRequest.getSearchText());
 
     // Create pageable
-    Pageable pageable = createPageable(searchRequest);
+    Pageable pageable = BuildPageable.createPageable(searchRequest);
 
     // Execute text search
     Page<Customer> customers = customerRepository.findAll(specification, pageable);
@@ -249,32 +247,6 @@ public class CustomerService implements ICustomer {
         .kycPendingCustomers(customerRepository.countByKyc_KycStatusAndIsDeletedFalse(KycStatus.PENDING))
         .kycCompletedCustomers(customerRepository.countByKyc_KycStatusAndIsDeletedFalse(KycStatus.APPROVED))
         .build();
-  }
-
-  // @Override
-  // @Transactional(readOnly = true)
-  // public void validateCustomer(CustomerValidationRequest request) {
-  //   log.debug("Validating customer with email: {}, phone: {}, idNumber: {}",
-  //       request.getEmail(), request.getPhoneNumber());
-
-  //   ValidationResponse validation = validationService.validateCustomer(request);
-
-  //   if (!validation.isValid()) {
-  //     throw new DuplicateCustomerException("Customer validation failed: " + validation.getErrorsAsString());
-  //   }
-  //}
-
-  private Pageable createPageable(PaginationRequest filter) {
-    Sort sort = createSort(filter.getSortBy(), filter.getSortDirection());
-    return PageRequest.of(filter.getPage(), filter.getSize(), sort);
-  }
-
-  private Sort createSort(String sortBy, String sortDirection) {
-    Sort.Direction direction = "desc".equalsIgnoreCase(sortDirection)
-        ? Sort.Direction.DESC
-        : Sort.Direction.ASC;
-
-    return Sort.by(direction, sortBy);
   }
 
 }

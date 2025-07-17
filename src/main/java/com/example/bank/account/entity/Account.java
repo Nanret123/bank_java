@@ -43,9 +43,9 @@ public class Account {
   @Column(name = "account_number", unique = true, nullable = false, length = 20)
   private String accountNumber;
 
-   @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "customer_id", nullable = false)
+  private Customer customer;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "account_type", nullable = false)
