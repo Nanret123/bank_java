@@ -1,19 +1,22 @@
 package com.example.bank.audit.aspect;
 
+import java.time.LocalDateTime;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
+
 import com.example.bank.audit.annotations.Auditable;
 import com.example.bank.audit.context.AuditContext;
 import com.example.bank.audit.entity.AuditLog;
 import com.example.bank.audit.services.AuditService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Aspect
 @Component
@@ -24,6 +27,7 @@ public class AuditAspect {
   private final AuditService auditService;
   private final AuditContext auditContext;
   private final ObjectMapper objectMapper;
+  private final HttpServletRequest request;
 
   @Around("@annotation(auditable)")
   public Object audit(ProceedingJoinPoint joinPoint, Auditable auditable) throws Throwable {
@@ -51,6 +55,11 @@ public class AuditAspect {
       String userEmail = auditContext.getUserEmail();
       String className = joinPoint.getTarget().getClass().getSimpleName();
 
+      String ipAddress = request.getHeader("X-Forwarded-For");
+      if (ipAddress == null || ipAddress.isEmpty()) {
+        ipAddress = request.getRemoteAddr();
+      }
+
       AuditLog logEntry = AuditLog.builder()
           .operationType(auditable.operation())
           .userId(userId)
@@ -60,6 +69,7 @@ public class AuditAspect {
           .success(success)
           .errorMessage(errorMessage)
           .executionTimeMs(System.currentTimeMillis() - startTime)
+          .ipAddress(ipAddress)
           .build();
 
       // Optionally capture arguments

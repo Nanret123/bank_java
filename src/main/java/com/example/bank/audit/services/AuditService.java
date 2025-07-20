@@ -22,7 +22,7 @@ public class AuditService {
     try {
       auditLogRepository.save(auditLog);
       log.info("Audit log saved for user: {}, action: {}, entity: {}",
-          auditLog.getUserId(), auditLog.getOperationType(), auditLog.getEntityType());
+          auditLog.getUserId(), auditLog.getOperationType(), auditLog.getClass());
     } catch (Exception e) {
       log.error("Failed to save audit log: {}", e.getMessage(), e);
     }

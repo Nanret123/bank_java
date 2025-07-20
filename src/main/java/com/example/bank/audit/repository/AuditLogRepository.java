@@ -15,9 +15,9 @@ import com.example.bank.audit.enums.OperationType;
 @Repository
 public interface AuditLogRepository extends JpaRepository<AuditLog, UUID> {
     List<AuditLog> findByUserIdAndTimestampBetween(String userId, LocalDateTime start, LocalDateTime end);
-    List<AuditLog> findByEntityTypeAndEntityId(String entityType, String entityId);
-    List<AuditLog> findByModuleNameAndActionType(String moduleName, OperationType actionType);
+    List<AuditLog> findByModuleName(String moduleName);
+    List<AuditLog> findByModuleNameAndOperationType(String moduleName, OperationType operationType);
     
-    @Query("SELECT a FROM AuditLog a WHERE a.userId = :userId AND a.actionType IN :actionTypes ORDER BY a.timestamp DESC")
-    List<AuditLog> findUserActions(@Param("userId") String userId, @Param("actionTypes") List<OperationType> actionTypes);
+    @Query("SELECT a FROM AuditLog a WHERE a.userId = :userId AND a.operationType IN :operationTypes ORDER BY a.timestamp DESC")
+    List<AuditLog> findUserActions(@Param("userId") String userId, @Param("operationTypes") List<OperationType> operationTypes);
 }

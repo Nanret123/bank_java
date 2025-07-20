@@ -41,8 +41,6 @@ public class AuditLog {
   @Enumerated(EnumType.STRING)
   private OperationType operationType;
 
-  @Column(name = "entity_type")
-  private String entityType;
 
   @Column(name = "arguments", columnDefinition = "TEXT")
   private String arguments;
