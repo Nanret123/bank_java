@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: remove-entity-type-column
+      author: bank
+      changes:
+        - dropColumn:
+            columnName: entity_type
+            tableName: audit_logs

@@ -31,6 +31,10 @@ databaseChangeLog:
       file: db/changelog/add-transaction-table.yml
   - include:
         file: db/changelog/add-ledger-entry-table.yml
+  - include:
+      file: db/changelog/add-audit-log-table.yml
+  - include:
+        file: db/changelog/remove-entity-column.yml
 
 
 
