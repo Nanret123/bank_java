@@ -56,14 +56,6 @@ public class CustomerController {
     return ApiResponseUtil.success("Customer created successfully", response, HttpStatus.CREATED);
   }
 
-  @GetMapping("/{id}")
-  @Operation(summary = "Get customer by ID")
-  public ResponseEntity<ApiResponseDto<CustomerResponse>> getCustomerById(@PathVariable UUID id) {
-    CustomerResponse response = customerService.getCustomerById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
-    return ApiResponseUtil.success("Customer retrieved successfully", response);
-  }
-
   @PutMapping("/{id}")
   @Operation(summary = "Update customer")
   public ResponseEntity<ApiResponseDto<CustomerResponse>> updateCustomer(
@@ -113,6 +105,7 @@ public class CustomerController {
   @Operation(summary = "Get all active (non-deleted) customers")
   public ResponseEntity<ApiResponseDto<Page<CustomerSummaryResponse>>> getAllActiveCustomers(
       @Valid @ModelAttribute @ParameterObject CustomerFilter filter) {
+    filter.setIsDeleted(false);
     Page<CustomerSummaryResponse> customers = customerService.getAllActiveCustomers(filter);
     return ApiResponseUtil.success("Active customers retrieved successfully", customers);
   }
@@ -151,5 +144,13 @@ public class CustomerController {
   public ResponseEntity<ApiResponseDto<CustomerStatisticsResponse>> getCustomerStatistics() {
     CustomerStatisticsResponse stats = customerService.getCustomerStatistics();
     return ApiResponseUtil.success("Statistics retrieved successfully", stats);
+  }
+
+  @GetMapping("/{id}")
+  @Operation(summary = "Get customer by ID")
+  public ResponseEntity<ApiResponseDto<CustomerResponse>> getCustomerById(@PathVariable UUID id) {
+    CustomerResponse response = customerService.getCustomerById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+    return ApiResponseUtil.success("Customer retrieved successfully", response);
   }
 }

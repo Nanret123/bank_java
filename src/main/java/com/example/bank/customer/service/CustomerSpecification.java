@@ -38,10 +38,10 @@ public class CustomerSpecification {
         predicates.add(criteriaBuilder.equal(root.get("branchCode"), filter.getBranchCode()));
       }
 
-       // Join with KycProfile
+      // Join with KycProfile
       Join<Customer, KycProfile> kycJoin = root.join("kyc", JoinType.LEFT);
 
-            // Filter by KYC status from KycProfile
+      // Filter by KYC status from KycProfile
       if (filter.getKycStatus() != null) {
         predicates.add(criteriaBuilder.equal(kycJoin.get("kycStatus"), filter.getKycStatus()));
       }
@@ -51,7 +51,13 @@ public class CustomerSpecification {
         predicates.add(criteriaBuilder.equal(kycJoin.get("riskLevel"), filter.getRiskRating()));
       }
 
-
+      if (filter.getIsDeleted() != null) {
+        if (filter.getIsDeleted()) {
+          predicates.add(criteriaBuilder.isTrue(root.get("isDeleted")));
+        } else {
+          predicates.add(criteriaBuilder.isFalse(root.get("isDeleted")));
+        }
+      }
 
       if (StringUtils.hasText(filter.getCreatedAt())) {
         try {
@@ -84,7 +90,7 @@ public class CustomerSpecification {
       searchPredicates.add(criteriaBuilder.like(
           criteriaBuilder.lower(root.get("firstName")), searchPattern));
 
-          searchPredicates.add(criteriaBuilder.like(
+      searchPredicates.add(criteriaBuilder.like(
           criteriaBuilder.lower(root.get("lastName")), searchPattern));
 
       // Search in email

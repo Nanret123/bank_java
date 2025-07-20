@@ -60,10 +60,6 @@ public class CustomerService implements ICustomer {
     // Save customer
     Customer savedCustomer = customerRepository.save(customer);
 
-    // Audit log
-    // auditService.logCustomerCreation(savedCustomer.getCustomerId(),
-    // getCurrentUser());
-
     return customerMapper.toResponse(savedCustomer);
 
   }
@@ -90,11 +86,6 @@ public class CustomerService implements ICustomer {
 
     // Save updated customer
     Customer updatedCustomer = customerRepository.save(customer);
-
-    // // Audit log
-    // auditService.logCustomerUpdate(customerId, originalCustomer, updatedCustomer,
-    // getCurrentUser());
-
     return customerMapper.toResponse(updatedCustomer);
   }
 
@@ -116,9 +107,6 @@ public class CustomerService implements ICustomer {
     customer.setStatus(CustomerStatus.CLOSED);
 
     customerRepository.save(customer);
-
-    // Audit log
-    // auditService.logCustomerDeletion(customerId, getCurrentUser());
   }
 
   @Override
@@ -135,9 +123,6 @@ public class CustomerService implements ICustomer {
     customer.setStatus(CustomerStatus.ACTIVE);
 
     customerRepository.save(customer);
-
-    // Audit log
-    // auditService.logCustomerRestore(customerId, getCurrentUser());
   }
 
   @Override
@@ -152,7 +137,7 @@ public class CustomerService implements ICustomer {
     Pageable pageable = BuildPageable.createPageable(filter);
 
     // Execute query with filters
-    Page<Customer> customers = customerRepository.findAllByIsDeletedFalse(specification, pageable);
+    Page<Customer> customers = customerRepository.findAll(specification, pageable);
 
     return customers.map(customerMapper::toSummaryResponse);
   }
@@ -233,10 +218,6 @@ public class CustomerService implements ICustomer {
 
     Customer updatedCustomer = customerRepository.save(customer);
 
-    // Audit log
-    // auditService.logStatusChange(customerId, oldStatus.name(),
-    // request.getStatus(), request.getReason(),
-    // userId);
     return customerMapper.toResponse(updatedCustomer);
   }
 

@@ -33,4 +33,7 @@ public class CustomerFilter extends PaginationRequest {
 
   @Schema(description = "Filter customers by creation date in yyyy-MM-dd format")
   private String createdAt;
+
+  @Schema(description = "Filter by deletion status (true for deleted, false for active). Optional.")
+  private Boolean isDeleted;
 }
