@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
@@ -7,9 +7,9 @@ spring:
   jackson:
     time-zone: Africa/Lagos
   datasource:
-    url: jdbc:postgresql://localhost:5432/bank_management_system
-    username: postgres
-    password: postgres
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   data:
     jpa:
@@ -39,41 +39,37 @@ spring:
     drop-first: false
     enabled: true   
     default-schema: public
-    contexts: dev
+    contexts: prod
     change-log: classpath:db/changelog/db.changelog-master.yml
-
   servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 50MB
-      
-  profiles:
-    active: prod
 
 logging:
-    level:
-      ROOT: INFO
-      '[org.hibernate.SQL]': INFO
-      '[com.example.ecom]': DEBUG
-      
+  level:
+    ROOT: INFO
+    '[org.hibernate.SQL]': INFO
+    '[com.example.ecom]': DEBUG
+
 cloudinary:
-  cloud_name: dbvv8bryb
-  api_key: 574394318681495
-  api_secret: HVSBv2I6uL1eckjqbxBpMvDH_K8
-      
+  cloud_name: ${CLOUD_NAME}
+  api_key: ${CLOUD_API_KEY}
+  api_secret: ${CLOUD_API_SECRET}
+
 app:
   jwt:
-    secret: uE9Z2NFgDgy5ykNQy6zjUPx0FVqzffGu1eS05Lr8chc%
+    secret: ${JWT_SECRET}
     access-token-expiration: 604800000
-    # access-token-expiration: 1800000   # 30 minutes
-    refresh-token-expiration: 604800000  # e.g., 7 days in milliseconds
+    refresh-token-expiration: 604800000
     cors:
       allowed-origins: "*"
       allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
       allowed-headers: "*"
       allow-credentials: true
       max-age: 3600
+
 springdoc:
   packages-to-scan: com.example.bank
   swagger-ui:
@@ -90,4 +86,4 @@ banking:
       rate: 0.075
   bank:
     control:
-      account: "BANK_CONTROL_000001"  # Placeholder for the bank control account, replace with actual account name
+      account: "BANK_CONTROL_000001"
