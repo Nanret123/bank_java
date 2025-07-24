@@ -26,7 +26,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bank_management_system
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
 volumes:
