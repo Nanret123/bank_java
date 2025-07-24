@@ -23,7 +23,7 @@ public class UserSeeder implements CommandLineRunner {
 
   @Override
   public void run(String... args) {
-    if (userRepo.count() == 1) {
+    if (userRepo.count() == 0) {
       System.out.println("🔧 Seeding users...");
       Faker faker = new Faker();
       List<User> users = new ArrayList<>();

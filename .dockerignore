@@ -1,0 +1,5 @@
+target/*.original
+target/generated-sources/
+target/test-classes/
+target/surefire-reports/
+target/*.jar.original

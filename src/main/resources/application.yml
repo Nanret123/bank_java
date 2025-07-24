@@ -7,10 +7,10 @@ spring:
   jackson:
     time-zone: Africa/Lagos
   datasource:
-    url: jdbc:postgresql://localhost:5432/bank_management_system
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
   data:
     jpa:
       repositories:
@@ -47,9 +47,6 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 50MB
-      
-  profiles:
-    active: prod
 
 logging:
     level:
@@ -58,13 +55,13 @@ logging:
       '[com.example.ecom]': DEBUG
       
 cloudinary:
-  cloud_name: dbvv8bryb
-  api_key: 574394318681495
-  api_secret: HVSBv2I6uL1eckjqbxBpMvDH_K8
+  cloud_name: ${CLOUDINARY_CLOUD_NAME}
+  api_key: ${CLOUDINARY_API_KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}
       
 app:
   jwt:
-    secret: uE9Z2NFgDgy5ykNQy6zjUPx0FVqzffGu1eS05Lr8chc%
+    secret: ${JWT_SECRET}
     access-token-expiration: 604800000
     # access-token-expiration: 1800000   # 30 minutes
     refresh-token-expiration: 604800000  # e.g., 7 days in milliseconds
