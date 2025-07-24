@@ -36,10 +36,8 @@ public class SwaggerConfig {
         .servers(Arrays.asList(
             new Server().url("http://localhost:8080")
                 .description("Development Server"),
-            new Server().url("https://api-staging.bank.com")
-                .description("Staging Server"),
-            new Server().url("https://api.bank.com")
-                .description("Production Server")))
+            new Server().url("https://core-bank-management-app.onrender.com")
+                .description("Render Deployment")))
         .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
         .components(new Components()
             .addSecuritySchemes("Bearer Authentication", createBearerScheme())
@@ -78,73 +76,73 @@ public class SwaggerConfig {
 
   // @Bean
   // public GroupedOpenApi authenticationApi() {
-  //   return GroupedOpenApi.builder()
-  //       .group("01-authentication")
-  //       .displayName("Authentication & User Management")
-  //       .pathsToMatch("/api/auth/**", "/api/users/**")
-  //       .build();
+  // return GroupedOpenApi.builder()
+  // .group("01-authentication")
+  // .displayName("Authentication & User Management")
+  // .pathsToMatch("/api/auth/**", "/api/users/**")
+  // .build();
   // }
 
   // @Bean
   // public GroupedOpenApi customerApi() {
-  //   return GroupedOpenApi.builder()
-  //       .group("02-customers")
-  //       .displayName("Customer Management")
-  //       .pathsToMatch("/api/customers/**")
-  //       .build();
+  // return GroupedOpenApi.builder()
+  // .group("02-customers")
+  // .displayName("Customer Management")
+  // .pathsToMatch("/api/customers/**")
+  // .build();
   // }
 
   // @Bean
   // public GroupedOpenApi accountApi() {
-  //   return GroupedOpenApi.builder()
-  //       .group("03-accounts")
-  //       .displayName("Account Management")
-  //       .pathsToMatch("/api/accounts/**")
-  //       .build();
+  // return GroupedOpenApi.builder()
+  // .group("03-accounts")
+  // .displayName("Account Management")
+  // .pathsToMatch("/api/accounts/**")
+  // .build();
   // }
 
   // @Bean
   // public GroupedOpenApi transactionApi() {
-  //   return GroupedOpenApi.builder()
-  //       .group("04-transactions")
-  //       .displayName("Transaction Processing")
-  //       .pathsToMatch("/api/transactions/**")
-  //       .build();
+  // return GroupedOpenApi.builder()
+  // .group("04-transactions")
+  // .displayName("Transaction Processing")
+  // .pathsToMatch("/api/transactions/**")
+  // .build();
   // }
 
   // @Bean
   // public GroupedOpenApi ledgerApi() {
-  //   return GroupedOpenApi.builder()
-  //       .group("05-ledger")
-  //       .displayName("Ledger & Accounting")
-  //       .pathsToMatch("/api/ledger/**")
-  //       .build();
+  // return GroupedOpenApi.builder()
+  // .group("05-ledger")
+  // .displayName("Ledger & Accounting")
+  // .pathsToMatch("/api/ledger/**")
+  // .build();
   // }
 
   // @Bean
   // public GroupedOpenApi reportingApi() {
-  //   return GroupedOpenApi.builder()
-  //       .group("06-reporting")
-  //       .displayName("Reports & Audit")
-  //       .pathsToMatch("/api/reports/**", "/api/audit/**")
-  //       .build();
+  // return GroupedOpenApi.builder()
+  // .group("06-reporting")
+  // .displayName("Reports & Audit")
+  // .pathsToMatch("/api/reports/**", "/api/audit/**")
+  // .build();
   // }
 
   // @Bean
   // public GroupedOpenApi branchApi() {
-  //   return GroupedOpenApi.builder()
-  //       .group("07-branches")
-  //       .displayName("Branch Management")
-  //       .pathsToMatch("/api/branches/**")
-  //       .build();
+  // return GroupedOpenApi.builder()
+  // .group("07-branches")
+  // .displayName("Branch Management")
+  // .pathsToMatch("/api/branches/**")
+  // .build();
   // }
 
   // @Bean
   // public GroupedOpenApi adminApi() {
-  //   return GroupedOpenApi.builder()
-  //       .group("08-admin")
-  //       .displayName("System Administration")
-  //       .pathsToMatch("/api/admin/**")
-  //       .build();
+  // return GroupedOpenApi.builder()
+  // .group("08-admin")
+  // .displayName("System Administration")
+  // .pathsToMatch("/api/admin/**")
+  // .build();
   // }
 }
