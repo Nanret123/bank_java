@@ -54,7 +54,7 @@ cd bank-project
 ./mvnw spring-boot:run
 ```
 ## 📖 API Documentation
-Once the app is running, visit: **http://localhost:8080/swagger-ui.html**
+Once the app is running, visit: **https://core-bank-management-app.onrender.com/swagger-ui.html**
 
 To explore and test available endpoints using Swagger UI.
 
